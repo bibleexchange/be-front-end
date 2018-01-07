@@ -5,10 +5,50 @@ import {
   graphql,
 } from 'react-relay/compat';
 import SimpleBibleVerse from '../Bible/SimpleBibleVerse'
+import Document from '../MyNotes/Document'
 
 import './Note.scss'
 
 class NoteViewer extends React.Component {
+
+componentWillMount() {
+     let config = this.figureConfig(this.props.note)
+
+    this.state ={
+      options:{
+        editDoc: false,
+        numbers: true,
+        markup: true,
+        json: false,
+        meta: false,
+        history: false
+      },
+      config: config,
+      oldConfig: config,
+      rawConfig: JSON.stringify(config),
+
+      newMeta: {key:"",value:""},
+      newSectionTitle: "",
+      newUnitTitle:"",
+      newLine:{markup:"p",value:"",index: config.lines.length},
+      error: null,
+      editState:[],
+      docSaved: true
+
+    }
+  }
+
+  componentWillReceiveProps(newProps){
+    if(this.props.note !== undefined && this.props.note !== null && this.props.note.config !== null && JSON.stringify(newProps.viewer.note.config) !== JSON.stringify(this.state.oldConfig)){
+      let newState = this.state
+      newState.oldConfig = this.figureConfig(newProps.note)
+      newState.config = this.figureConfig(newProps.note)
+      newState.rawConfig = newProps.note.body
+
+      newState.docSaved = true
+      this.setState(newState)
+    }
+  }
 
   render() {
 
@@ -23,6 +63,17 @@ class NoteViewer extends React.Component {
   }
 
   noteRender(){
+
+    return ( <Document 
+            state={Object.assign({},this.state)}
+            handleFullEdit={this.handleFullEdit}   
+            handleToggleEdit={this.handleToggleEdit}
+            handleDocChange={this.handleDocChange}
+            reportError={this.reportError}
+            />)
+  }
+
+  noteRenderDISABLED(){
 
     return (
 
@@ -49,6 +100,40 @@ class NoteViewer extends React.Component {
       );
   }
 
+   figureConfig(note){
+
+  let config = {}
+  let meta = []
+  let history = []
+
+  if(note !== null && note.body !== null){
+      
+      if(note.body.substring(0,1) === "{"){
+        config = JSON.parse(note.body)
+      }else{
+
+        config = {
+          lines: [{markup:"md", value:note.body}],
+          meta: [{key:"title",value:note.title}]
+        }
+      }
+      
+      if(config.lines === null || config.lines === undefined){config.lines = []}
+      if(config.meta === null || config.meta === undefined){config.meta = meta}
+      if(config.history === null || config.history === undefined){config.history = history}
+    }
+    
+    if(Object.keys(config).length === 0 && config.constructor === Object){
+      config = {
+      meta : meta,
+      lines : [],
+      history: []
+      }
+    }
+
+    return config
+}
+
 }
 
 NoteViewer.propTypes = {
@@ -64,6 +149,7 @@ const FragmentContainer =  createFragmentContainer(NoteViewer, graphql`
   fragment NoteViewer_note on Note {
       id
     title
+    body
     tags
       author{
         name

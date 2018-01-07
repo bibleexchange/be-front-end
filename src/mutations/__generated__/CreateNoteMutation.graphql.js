@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 9144d7941a2663bb5d09e323e5fcd01d
+ * @relayHash 7e8ad9e3fa8e571e93a9b81159b466df
  */
 
 /* eslint-disable */
@@ -24,7 +24,7 @@ export type CreateNoteMutationVariables = {|
 export type CreateNoteMutationResponse = {|
   +createNote: ?{|
     +noteEdge: ?{|
-      +__typename: string;
+      +typename: ?string;
       +cursor: string;
       +node: ?{|
         +id: string;
@@ -56,7 +56,7 @@ mutation CreateNoteMutation(
 ) {
   createNote(input: $input) {
     noteEdge {
-      __typename
+      typename
       cursor
       node {
         id
@@ -122,7 +122,7 @@ const batch /*: ConcreteBatch*/ = {
                 "kind": "ScalarField",
                 "alias": null,
                 "args": null,
-                "name": "__typename",
+                "name": "typename",
                 "storageKey": null
               },
               {
@@ -299,7 +299,7 @@ const batch /*: ConcreteBatch*/ = {
                 "kind": "ScalarField",
                 "alias": null,
                 "args": null,
-                "name": "__typename",
+                "name": "typename",
                 "storageKey": null
               },
               {
@@ -431,7 +431,7 @@ const batch /*: ConcreteBatch*/ = {
       }
     ]
   },
-  "text": "mutation CreateNoteMutation(\n  $input: CreateNoteInput!\n) {\n  createNote(input: $input) {\n    noteEdge {\n      __typename\n      cursor\n      node {\n        id\n        title\n        body\n        verse {\n          id\n          reference\n          body\n        }\n        tags_string\n      }\n    }\n    viewer {\n      id\n    }\n    error {\n      code\n      message\n    }\n  }\n}\n"
+  "text": "mutation CreateNoteMutation(\n  $input: CreateNoteInput!\n) {\n  createNote(input: $input) {\n    noteEdge {\n      typename\n      cursor\n      node {\n        id\n        title\n        body\n        verse {\n          id\n          reference\n          body\n        }\n        tags_string\n      }\n    }\n    viewer {\n      id\n    }\n    error {\n      code\n      message\n    }\n  }\n}\n"
 };
 
 module.exports = batch;

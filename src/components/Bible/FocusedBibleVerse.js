@@ -62,7 +62,6 @@ class FocusedBibleVerse extends React.Component {
       makeNote = <Link to={"/create/"+this.props.verse.id+"?back="+this.props.location.pathname}  className="be-button" >make a note on {this.props.verse.reference}</Link>
     }
 
-console.log(crossReferences)
     if(this.props.simple){
       return (
             <div className="bible-verse">

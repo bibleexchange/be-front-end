@@ -11,6 +11,7 @@ import type {ConcreteFragment} from 'relay-runtime';
 export type NoteViewer_note = {|
   +id: string;
   +title: ?string;
+  +body: ?string;
   +tags: ?$ReadOnlyArray<?string>;
   +author: ?{|
     +name: ?string;
@@ -49,6 +50,13 @@ const fragment /*: ConcreteFragment*/ = {
       "alias": null,
       "args": null,
       "name": "title",
+      "storageKey": null
+    },
+    {
+      "kind": "ScalarField",
+      "alias": null,
+      "args": null,
+      "name": "body",
       "storageKey": null
     },
     {

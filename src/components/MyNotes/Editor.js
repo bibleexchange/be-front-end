@@ -7,14 +7,16 @@ import { withRouter } from 'react-router-dom';
 import UpdateNoteMutation from '../../mutations/UpdateNoteMutation'
 import Document from './Document'
 
-Array.prototype.move = function(old_index, new_index) {
-    if (new_index >= this.length) {
-        var k = new_index - this.length;
+function move(old_index, new_index, array) {
+    if (new_index >= array.length) {
+        var k = new_index - array.length;
         while ((k--) + 1) {
-            this.push(undefined);
+            array.push(undefined);
         }
     }
-    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+    array.splice(new_index, 0, array.splice(old_index, 1)[0]);
+
+    return array;
 };
 
 class Editor extends React.Component {
@@ -230,7 +232,7 @@ handleToggleEdit(e){
       let lastIndex = newState.config.lines.length-1
 
       if(newLine.index !== "" && newLine.index !== lastIndex){
-        newState.config.lines.move(lastIndex, newLine.index)
+        newState.config.lines = move(lastIndex, newLine.index, newState.config.lines)
       }
 
     }
@@ -345,7 +347,7 @@ handleToggleEdit(e){
   updateLine(target, state){
     let index = target.dataset.index
     if(target.dataset.name === "index"){
-      state.config.lines.move(index, target.value)
+      state.config.lines = move(index, target.value, state.config.lines)
     }else{
       state.config.lines[index][target.dataset.name] = target.value
     }

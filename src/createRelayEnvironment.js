@@ -8,7 +8,7 @@ const {
 import auth from "./auth";
 
 function fetchQuery(operation,variables){
-    return fetch("http://localhost:80/graphql", {
+    return fetch(process.env.API_ENDPOINT? process.env.API_ENDPOINT:"http://bible.exchange/graphql", {
         method: "POST",
         headers: {
             "Authorization": "Bearer " + auth.getToken(),

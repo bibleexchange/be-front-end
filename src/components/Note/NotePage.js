@@ -20,6 +20,7 @@ const NotePageViewerQuery = graphql`
 
       note (id:$noteId){
         id
+        body
         ...NoteViewer_note
       }
 

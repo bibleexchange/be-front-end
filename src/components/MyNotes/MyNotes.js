@@ -102,7 +102,9 @@ if(this.state.newNote.id !== undefined){
 
               {this.props.userNotes.edges.filter(function(item){
                 if(item.node !== undefined){
-                  return item.node.title.toLowerCase().search(state.newnoteTitle.toLowerCase()) !== -1;
+                  if(item.node.title !== null){
+                    return item.node.title.toLowerCase().search(state.newnoteTitle.toLowerCase()) !== -1;
+                  }                  
                 }
                 return null
               }).map(function(c){
