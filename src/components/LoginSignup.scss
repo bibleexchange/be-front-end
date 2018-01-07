@@ -1,0 +1,39 @@
+#login-signup {
+	input {
+	display:block;
+	width:100%;
+	margin-bottom: 25px;
+	}
+
+
+}
+
+@keyframes spinner {
+  to {transform: rotate(360deg);}
+}
+
+.spinner:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  border-top-color: #333;
+  animation: spinner .6s linear infinite;
+}
+
+.ready-false {
+	.main {
+		display:none;
+	}
+}
+
+.ready-true{
+	.spinner {
+		display:none;
+	}
+}

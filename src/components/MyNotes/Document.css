@@ -1,0 +1,98 @@
+.flexbox-container {
+	display: -ms-flex;
+	display: -webkit-flex;
+	display: flex;
+	flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.flexbox-container2 > div:nth-child(1), .flexbox-container2 > div:nth-child(2) {
+	width: 35px;
+	overflow: hidden;
+	text-align: center;
+	vertical-align: middle;
+	color:gray;
+	border:none;
+}
+
+.flexbox-container .value {
+	   overflow: hidden;
+   text-overflow: ellipsis;
+   display: -webkit-box;
+   line-height: 16px;     /* fallback */
+   max-height: 128px;      /* fallback */
+   -webkit-line-clamp: 6; /* number of lines to show */
+   -webkit-box-orient: vertical;
+   margin-bottom:30px;
+}
+
+.flexbox-container > div {
+	padding: 0px;
+}
+
+.flexbox-container > div > input, .flexbox-container2 > div > input{
+	width: 100%;
+}
+
+.flexbox-container > li {
+	width: 35px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 35px;
+	color:gray;
+	border-right: 1px solid gray;
+	list-style: none;
+}
+
+.flexbox-container > div:nth-child(3){
+	margin-left: 15px;
+	width: 70%
+}
+
+#document #about input {
+	width:auto;
+	border:none;
+		border-bottom: solid 1px gray;
+}
+
+#document #about button {
+	float: right;
+	border:none;
+}
+
+#document {
+	margin:15px;
+}
+
+#document iframe {
+	width:100%;
+}
+
+.hide {
+	visibility: hidden;
+}
+
+#doc-nav{
+	border: solid 1px gray;
+}
+
+@media print {
+
+	#editor * {
+	 visibility: hidden;
+	}
+
+	#document * {
+	 visibility: visible;
+	}
+
+}
+
+.passed-true {
+	color:green;
+}
+
+
+.passed-false {
+	color:red;
+}

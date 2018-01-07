@@ -1,0 +1,1229 @@
+schema {
+  query: ViewerQuery
+  mutation: Mutation
+}
+
+# An activity of a lesson.
+type Activity implements Node {
+  # The ID of an object
+  id: ID!
+  lesson: Lesson
+  config: String
+  body: String
+  order_by: Int
+  created_at: String
+  updated_at: String
+}
+
+# A connection to a list of items.
+type ActivityConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [ActivityEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type ActivityEdge {
+  # The item at the end of the edge
+  node: Activity
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A version of the Holy Bible
+type Bible implements Node {
+  # The ID of an object
+  id: ID!
+  abbreviation: String
+  language: String
+
+  # The version of the Bible.
+  version: String
+  info_text: String
+  info_url: String
+  publisher: String
+  copyright: String
+  copyright_info: String
+
+  # The books of the Bible.
+  books(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): BibleBookConnection
+}
+
+# A book of the Holy Bible
+type BibleBook implements Node {
+  # The ID of an object
+  id: ID!
+
+  # Name of the Book of the Bible
+  title: String
+  slug: String
+
+  # Testament of the Book of the Bible.
+  t: String
+
+  # Genre ID of the book of the Bible
+  g: Int
+
+  # The number of Chapters in this book of the Bible
+  chapterCount: Int
+
+  # The chapters of this book of the Bible.
+  chapters(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): BibleVerseConnection
+}
+
+# A connection to a list of items.
+type BibleBookConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [BibleBookEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type BibleBookEdge {
+  # The item at the end of the edge
+  node: BibleBook
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A chapter of a book of the Holy Bible
+type BibleChapter implements Node {
+  # The ID of an object
+  id: ID!
+  bible_book_id: Int
+  verseCount: Int
+  order_by: Int
+  reference: String
+  referenceSlug: String
+  url: String
+  nextChapter: BibleChapter
+  previousChapter: BibleChapter
+
+  # The verses of this chapter of the Bible.
+  verses(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): BibleVerseConnection
+
+  # Notes Application Wide.
+  notes(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): NoteConnection
+}
+
+# A connection to a list of items.
+type BibleChapterConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [BibleChapterEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type BibleChapterEdge {
+  # The item at the end of the edge
+  node: BibleChapter
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A connection to a list of items.
+type BibleConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [BibleEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type BibleEdge {
+  # The item at the end of the edge
+  node: Bible
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A verse of the Holy Bible
+type BibleVerse implements Node {
+  # The ID of an object
+  id: ID!
+  book: BibleBook
+  chapter: SimpleBibleChapter
+
+  # book order by
+  bookNumber: Int
+
+  # chapter order by
+  chapterNumber: Int
+
+  # verse order by
+  verseNumber: Int
+
+  # text of the verse
+  body: String
+  biblechapter_id: Int
+  bible_version_id: Int
+  chapterURL: String
+  reference: String
+  url: String
+  quote: String
+  notesCount: Int
+  next: BibleVerse
+  previous: BibleVerse
+
+  # Notes Application Wide.
+  notes(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): NoteConnection
+
+  # crossReferences.
+  crossReferences(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): CrossReferenceConnection
+}
+
+# A verse of the Holy Bible
+type BibleVerse2 implements Node {
+  # The ID of an object
+  id: ID!
+
+  # book order by
+  bookNumber: Int
+
+  # chapter order by
+  chapterNumber: Int
+
+  # verse order by
+  verseNumber: Int
+
+  # text of the verse
+  body: String
+  biblechapter_id: Int
+  bible_version_id: Int
+  chapterURL: String
+  reference: String
+  url: String
+  quote: String
+}
+
+# A connection to a list of items.
+type BibleVerse2Connection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [BibleVerse2Edge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type BibleVerse2Edge {
+  # The item at the end of the edge
+  node: BibleVerse2
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A connection to a list of items.
+type BibleVerseConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [BibleVerseEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type BibleVerseEdge {
+  # The item at the end of the edge
+  node: BibleVerse
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A course.
+type Course implements Node {
+  # The ID of an object
+  id: ID!
+  verse: BibleVerse
+  title: String
+  description: String
+  config: String
+  owner: User
+  lessonsCount: Int
+  created_at: String
+  updated_at: String
+
+  # The lessons of this course.
+  lessons(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): LessonConnection
+  textbook: String
+  textbookSwahili: String
+}
+
+# A connection to a list of items.
+type CourseConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [CourseEdge]
+  resultsInfo: PagesInfo
+}
+
+input CourseCreateInput {
+  token: String!
+  title: String
+  description: String
+  reference: String
+  public: Boolean
+  config: String
+  clientMutationId: String!
+}
+
+type CourseCreatePayload {
+  error: String
+  code: String
+  newCourseEdge: UserCourse
+
+  # User Owned Courses
+  courses(after: String, first: Int, before: String, last: Int, collection: String, filter: String, id: String): UserCourseConnection
+  clientMutationId: String!
+}
+
+input CourseDestroyInput {
+  token: String
+  id: String!
+  clientMutationId: String!
+}
+
+type CourseDestroyPayload {
+  error: String
+  code: String
+  course: UserCourse
+  clientMutationId: String!
+}
+
+# An edge in a connection
+type CourseEdge {
+  # The item at the end of the edge
+  node: Course
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+input CourseUpdateInput {
+  token: String
+  id: String!
+  title: String
+  reference: String
+  description: String
+  public: Boolean
+  config: String
+  clientMutationId: String!
+}
+
+type CourseUpdatePayload {
+  error: String
+  code: String
+  course: UserCourse
+  clientMutationId: String!
+}
+
+input CreateNoteInput {
+  bible_verse_id: String
+  body: String!
+  tags_string: String
+  title: String
+  reference: String
+  token: String!
+  clientMutationId: String!
+}
+
+type CreateNotePayload {
+  error: Error
+
+  # The Note the User just created
+  noteEdge(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): NoteTypeEdge
+  viewer: Viewer
+  clientMutationId: String!
+}
+
+input CreateSessionInput {
+  email: String!
+  password: String!
+  clientMutationId: String!
+}
+
+type CreateSessionPayload {
+  error: Error
+  token: String
+  viewer: Viewer
+  clientMutationId: String!
+}
+
+input CreateStatementInput {
+  token: String!
+  activity_id: String!
+  verb: String!
+  track_id: String!
+  clientMutationId: String!
+}
+
+type CreateStatementPayload {
+  error: String
+  code: String
+  track: Track
+  clientMutationId: String!
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
+  clientMutationId: String!
+}
+
+type CreateUserPayload {
+  token: String
+  error: Error
+  viewer: Viewer
+  clientMutationId: String!
+}
+
+# A cross reference to a Bible Verse
+type CrossReference implements Node {
+  # The ID of an object
+  id: ID!
+  bible_verse_id: Int
+  rank: Int
+  start_verse: Int
+  end_verse: Int
+  reference: String
+  url: String
+
+  # The verses of this cross reference.
+  verses(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): BibleVerse2Connection
+}
+
+# A connection to a list of items.
+type CrossReferenceConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [CrossReferenceEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type CrossReferenceEdge {
+  # The item at the end of the edge
+  node: CrossReference
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+input DeleteNoteInput {
+  id: String!
+  clientMutationId: String!
+}
+
+type DeleteNotePayload {
+  error: Error
+  code: String
+  deletedId: String
+  token: String!
+  clientMutationId: String!
+}
+
+input DeleteSessionInput {
+  token: String!
+  clientMutationId: String!
+}
+
+type DeleteSessionPayload {
+  error: Error
+  token: String
+  viewer: Viewer
+  clientMutationId: String!
+}
+
+# An error.
+type Error {
+  message: String
+  code: Int
+}
+
+# A lesson of a course.
+type Lesson implements Node {
+  # The ID of an object
+  id: ID!
+  title: String
+  description: String
+  order_by: Int
+  course_id: Int
+  next: Lesson
+  previous: Lesson
+  created_at: String
+  updated_at: String
+  activitiesCount: Int
+
+  # The activities of this lesson.
+  activities(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): ActivityConnection
+}
+
+# A connection to a list of items.
+type LessonConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [LessonEdge]
+  resultsInfo: PagesInfo
+}
+
+input LessonCreateInput {
+  token: String
+  title: String
+  description: String
+  course_id: String!
+  body: String
+  order_by: Int
+  clientMutationId: String!
+}
+
+type LessonCreatePayload {
+  error: String
+  code: String
+  course: UserCourse
+  clientMutationId: String!
+}
+
+input LessonDestroyInput {
+  id: String!
+  token: String
+  clientMutationId: String!
+}
+
+type LessonDestroyPayload {
+  error: String
+  code: String
+  lesson: UserLesson
+  clientMutationId: String!
+}
+
+# An edge in a connection
+type LessonEdge {
+  # The item at the end of the edge
+  node: Lesson
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+input LessonUpdateInput {
+  id: String!
+  token: String
+  title: String
+  description: String
+  course_id: Int
+  body: String
+  order_by: Int
+  body_id: Int
+  clientMutationId: String!
+}
+
+type LessonUpdatePayload {
+  error: String
+  code: String
+  lesson: UserLesson
+  clientMutationId: String!
+}
+
+# A library
+type Library implements Node {
+  # The ID of an object
+  id: ID!
+  title: String
+  description: String
+  created_at: String
+  updated_at: String
+
+  # The courses of the Library.
+  courses(after: String, first: Int, before: String, last: Int, filter: String, id: String): CourseConnection
+}
+
+# A connection to a list of items.
+type LibraryConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [LibraryEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type LibraryEdge {
+  # The item at the end of the edge
+  node: Library
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+type Mutation {
+  createSession(input: CreateSessionInput!): CreateSessionPayload
+  deleteSession(input: DeleteSessionInput!): DeleteSessionPayload
+  createUser(input: CreateUserInput!): CreateUserPayload
+  userCourseCreate(input: CourseCreateInput!): CourseCreatePayload
+  userCourseUpdate(input: CourseUpdateInput!): CourseUpdatePayload
+  userCourseDestroy(input: CourseDestroyInput!): CourseDestroyPayload
+  userLessonUpdate(input: LessonUpdateInput!): LessonUpdatePayload
+  userLessonCreate(input: LessonCreateInput!): LessonCreatePayload
+  userLessonDestroy(input: LessonDestroyInput!): LessonDestroyPayload
+  createNote(input: CreateNoteInput!): CreateNotePayload
+  updateNote(input: UpdateNoteInput!): UpdateNotePayload
+  deleteNote(input: DeleteNoteInput!): DeleteNotePayload
+  createStatement(input: CreateStatementInput!): CreateStatementPayload
+}
+
+# A users navigation history
+type NavHistory implements Node {
+  # The ID of an object
+  id: ID!
+  url: String
+  title: String
+}
+
+# A connection to a list of items.
+type NavHistoryConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [NavHistoryEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type NavHistoryEdge {
+  # The item at the end of the edge
+  node: NavHistory
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# An object with an ID
+interface Node {
+  # The id of the object
+  id: ID!
+}
+
+# A note.
+type Note implements Node {
+  # The ID of an object
+  id: ID!
+  title: String
+  tags: [String]
+  tags_string: String
+  body: String
+  bible_verse_id: Int
+  created_at: String
+  updated_at: String
+  output: NoteCache
+  verse: SimpleBibleVerse
+  author: Owner
+}
+
+# Cache of a Note
+type NoteCache {
+  id: ID
+  body: String
+  note_id: Int
+  updated_at: String
+  created_at: String
+}
+
+# A connection to a list of items.
+type NoteConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [NoteEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type NoteEdge {
+  # The item at the end of the edge
+  node: Note
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# An edge in a connection
+type NoteTypeEdge {
+  # The item at the end of the edge
+  typename: String
+
+  # The item at the end of the edge
+  node: Note
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+type Owner implements Node {
+  # The ID of an object
+  id: ID!
+  name: String
+  email: String
+  nickname: String
+  url: String
+  notesCount: Int
+}
+
+# Information about pagination in a connection.
+type PageInfo {
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
+}
+
+# PageInfo for a connection
+type PagesInfo {
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+
+  # When paginating forwards, the cursor to continue.
+  perPage: Int
+
+  # When paginating forwards, the cursor to continue.
+  currentPage: Int
+
+  # When paginating forwards, the cursor to continue.
+  totalCount: Int
+
+  # When paginating forwards, the cursor to continue.
+  totalPagesCount: Int
+}
+
+# A Resource
+type Resource implements Node {
+  # The ID of an object
+  id: ID!
+  title: String
+  author: String
+  text: String
+  sections(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): ResourceSectionConnection
+}
+
+# A connection to a list of items.
+type ResourceConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [ResourceEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type ResourceEdge {
+  # The item at the end of the edge
+  node: Resource
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A Resource
+type ResourceSection implements Node {
+  # The ID of an object
+  id: ID!
+  text: String
+
+  # crossReferences.
+  crossReferences(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): CrossReferenceConnection
+}
+
+# A connection to a list of items.
+type ResourceSectionConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [ResourceSectionEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type ResourceSectionEdge {
+  # The item at the end of the edge
+  node: ResourceSection
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A chapter of a book of the Holy Bible
+type SimpleBibleChapter implements Node {
+  # The ID of an object
+  id: ID!
+  bible_book_id: Int
+  verseCount: Int
+  order_by: Int
+  reference: String
+  referenceSlug: String
+  url: String
+}
+
+# A verse of the Holy Bible
+type SimpleBibleVerse implements Node {
+  # The ID of an object
+  id: ID!
+
+  # book order by
+  bookNumber: Int
+
+  # chapter order by
+  chapterNumber: Int
+
+  # verse order by
+  verseNumber: Int
+
+  # text of the verse
+  body: String
+  biblechapter_id: Int
+  bible_version_id: Int
+  chapterURL: String
+  reference: String
+  url: String
+  quote: String
+  notesCount: Int
+}
+
+# Statement of a users Experience with an activity.
+type Statement implements Node {
+  # The ID of an object
+  id: ID!
+
+  # user this experience belongs to.
+  user: User
+
+  # Action taken by user.
+  verb: String
+
+  # Activity action was taken upon by user.
+  activity: Activity
+}
+
+# A connection to a list of items.
+type StatementConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [StatementEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type StatementEdge {
+  # The item at the end of the edge
+  node: Statement
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A step of a lesson.
+type Step implements Node {
+  # The ID of an object
+  id: ID!
+  lesson_id: String
+  note_id: String
+  note: Note
+  order_by: Int
+  next: Step
+  previous: Step
+  created_at: String
+  updated_at: String
+}
+
+# A connection to a list of items.
+type StepConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [StepEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type StepEdge {
+  # The item at the end of the edge
+  node: Step
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A track.
+type Track implements Node {
+  # The ID of an object
+  id: ID!
+  course: Course
+  user: Owner
+  activity: Activity
+  lesson: Lesson
+
+  # User experience with currentLesson.
+  lessonStatements(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): StatementConnection
+}
+
+# A connection to a list of items.
+type TrackConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [TrackEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type TrackEdge {
+  # The item at the end of the edge
+  node: Track
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+input UpdateNoteInput {
+  id: String!
+  title: String
+  tags_string: String
+  body: String!
+  reference: String
+  token: String!
+  clientMutationId: String!
+}
+
+type UpdateNotePayload {
+  error: Error
+  note: Note
+  viewer: NoteConnection
+  clientMutationId: String!
+}
+
+type User implements Node {
+  # The ID of an object
+  id: ID!
+  name: String
+  email: String
+  nickname: String
+  url: String
+  notesCount: Int
+}
+
+# A connection to a list of items.
+type UserConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [UserEdge]
+  resultsInfo: PagesInfo
+}
+
+# A user course.
+type UserCourse implements Node {
+  # The ID of an object
+  id: ID!
+  verse: BibleVerse
+  title: String
+  description: String
+  public: Boolean
+  config: String
+  owner: Owner
+  lessonsCount: Int
+  created_at: String
+  everything: String
+  updated_at: String
+
+  # The lessons of this course.
+  lessons(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): LessonConnection
+}
+
+# A connection to a list of items.
+type UserCourseConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [UserCourseEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type UserCourseEdge {
+  # The item at the end of the edge
+  node: UserCourse
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# An edge in a connection
+type UserEdge {
+  # The item at the end of the edge
+  node: User
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A lesson of a course.
+type UserLesson implements Node {
+  # The ID of an object
+  id: ID!
+  verse: BibleVerse
+  title: String
+  description: String
+  order_by: Int
+  course_id: Int
+  next: Lesson
+  previous: Lesson
+  created_at: String
+  updated_at: String
+
+  # The activities of this lesson.
+  activities(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): ActivityConnection
+}
+
+# A connection to a list of items.
+type UserLessonConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [UserLessonEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type UserLessonEdge {
+  # The item at the end of the edge
+  node: UserLesson
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A users note.
+type UserNote implements Node {
+  # The ID of an object
+  id: ID!
+  title: String
+  tags: [String]
+  tags_string: String
+  body: String
+  type: String
+  bible_verse_id: Int
+  created_at: String
+  updated_at: String
+
+  # Processed body of note
+  output: NoteCache
+  verse: SimpleBibleVerse
+
+  # author of note
+  author: Owner
+
+  # The lessons of this note.
+  lessons(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): LessonConnection
+
+  # The steps of this note.
+  steps(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): StepConnection
+}
+
+# A connection to a list of items.
+type UserNoteConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Information to aid in pagination
+  edges: [UserNoteEdge]
+  resultsInfo: PagesInfo
+}
+
+# An edge in a connection
+type UserNoteEdge {
+  # The item at the end of the edge
+  node: UserNote
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+type Viewer {
+  # Note on Bible exchange.
+  note(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): Note
+
+  # A Collection of Notes on Bible exchange.
+  notes(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): NoteConnection
+
+  # Bible on Bible exchange.
+  bible(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): Bible
+
+  # A Collection of Bibles on Bible exchange.
+  bibles(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): BibleConnection
+
+  # BibleBook on Bible exchange.
+  bibleBook(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): BibleBook
+
+  # A Collection of BibleBooks on Bible exchange.
+  bibleBooks(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): BibleBookConnection
+
+  # BibleChapter on Bible exchange.
+  bibleChapter(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): BibleChapter
+
+  # A Collection of BibleChapters on Bible exchange.
+  bibleChapters(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): BibleChapterConnection
+
+  # BibleVerse on Bible exchange.
+  bibleVerse(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): BibleVerse
+
+  # A Collection of BibleVerses on Bible exchange.
+  bibleVerses(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): BibleVerseConnection
+
+  # CossReference on Bible exchange.
+  cossReference(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): CrossReference
+
+  # A Collection of CrossReferences on Bible exchange.
+  crossReferences(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): CrossReferenceConnection
+
+  # Library on Bible exchange.
+  library(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): Library
+
+  # A Collection of Libraries on Bible exchange.
+  libraries(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): LibraryConnection
+
+  # Course on Bible exchange.
+  course(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): Course
+
+  # A Collection of Courses on Bible exchange.
+  courses(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): CourseConnection
+
+  # Lesson on Bible exchange.
+  lesson(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): Lesson
+
+  # A Collection of Lessons on Bible exchange.
+  lessons(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): LessonConnection
+
+  # Step on Bible exchange.
+  step(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): Step
+
+  # A Collection of Steps on Bible exchange.
+  steps(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): StepConnection
+
+  # User on Bible exchange.
+  user(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): User
+
+  # A Collection of Users on Bible exchange.
+  users(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): UserConnection
+
+  # UserNavigation on Bible exchange.
+  userNavigation(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): NavHistory
+
+  # A Collection of UserNavigations on Bible exchange.
+  userNavigations(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): NavHistoryConnection
+
+  # UserNote on Bible exchange.
+  userNote(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): UserNote
+
+  # A Collection of UserNotes on Bible exchange.
+  userNotes(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): UserNoteConnection
+
+  # UserCourse on Bible exchange.
+  userCourse(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): UserCourse
+
+  # A Collection of UserCourses on Bible exchange.
+  userCourses(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): UserCourseConnection
+
+  # UserLesson on Bible exchange.
+  userLesson(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): UserLesson
+
+  # A Collection of UserLessons on Bible exchange.
+  userLessons(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): UserLessonConnection
+
+  # UserTrack on Bible exchange.
+  userTrack(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): Track
+
+  # A Collection of UserTracks on Bible exchange.
+  userTracks(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): TrackConnection
+
+  # Resource on Bible exchange.
+  resource(after: String, first: Int, before: String, last: Int, filter: String, id: String, token: String): Resource
+
+  # A Collection of Resources on Bible exchange.
+  resources(after: String, first: Int, before: String, last: Int, filter: String, id: String, orderBy: String, page: Int, perPage: Int): ResourceConnection
+  error: Error
+  id: String
+  name: String
+  email: String
+  verified: String
+  role: Int
+  password: String
+  remember_token: String
+  nickname: String
+  url: String
+  lang: String
+  lastStep: String
+  authenticated: Boolean
+}
+
+type ViewerQuery {
+  viewer(
+    # auth token
+    token: String
+
+    # language preference of viewer
+    lang: String
+  ): Viewer
+  node(
+    # id of an Object
+    id: ID!
+  ): Node
+}
+

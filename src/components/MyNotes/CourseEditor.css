@@ -1,0 +1,51 @@
+.menu {
+  display: block;
+}
+.menu > div {
+
+  z-index: 2;
+  top: 0;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+.menu > div.left {
+  width:100%;
+}
+
+.menu > .visible {
+  display: block;
+}
+
+.menu button {
+  margin: 15px;
+  width:90%;
+}
+
+.menu > div > .menu-item {
+  float: left;
+  width: 50%;
+  margin: 0;
+  padding: 10px 15px;
+  border-bottom: solid 1px #555;
+  cursor: pointer;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  color: #B0B0B0;
+}
+.menu > div > .menu-item:hover {
+  color: #F0F0F0;
+}
+
+#editor-main {
+  width: 100%;
+  margin:auto auto;
+}
+
+button.big, textarea.big {
+  width:100%;
+}
+
+.options-false {
+  display:none;
+}

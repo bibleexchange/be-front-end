@@ -1,0 +1,107 @@
+@import '../variables.scss';
+
+.be-button, .be-button-red, .be-button-back, .be-button-simple,.be-button-simple-back  {
+	display:block;
+	margin-top: 10px;
+	padding: 5px;
+	border:solid 5px #00C981;
+	color:#00C981;
+	font-weight: bold;
+	background-image:url('http://localhost/assets/img/arrow.png');
+	background-repeat: no-repeat;
+	background-size:30px 30px;
+	background-position: right;
+	text-align: center;
+	text-decoration: none;
+	background-color: white;
+}
+
+.be-button-back,.be-button-simple-back  {
+	background-image:url('http://localhost/assets/img/arrow-left.png');
+	background-position: left;
+}
+
+.be-button:hover,.be-button-red:hover {
+	background-color: #00C981;
+	color:white;
+	background-image: none;
+}
+
+.be-button-red {
+	color:$RED;
+}
+
+.be-button-red:hover {
+	background-color: $RED;
+}
+
+.be-button-simple-back, .be-button-simple {
+	border:none;
+	height: 50px;
+	width: 40px;
+	float:left;
+	margin:0;
+	padding:0;
+	background-color: none;
+}
+
+.be-button-simple {
+	float:right;
+}
+	.carousel {
+		margin-left: auto;
+	ul {
+		list-style:none;
+
+	    .noBorder {
+	    	background-image:none;
+	    	margin-top: 100px;
+	    }
+
+		li {
+			float:left;
+			margin: 15px;
+			width: 230px;
+			height:300px;
+			padding:35px;
+			border: none;
+			background-image:url('http://localhost/assets/img/be_border.png');
+		    background-repeat: no-repeat;
+		    background-size:230px 300px;
+		    overflow:hidden;
+
+		    p {
+		      overflow: hidden;
+			  display: -webkit-box;
+			  -webkit-line-clamp: 4;
+			  -webkit-box-orient: vertical;
+		    }
+
+		    h2 {
+		      overflow: hidden;
+			  display: -webkit-box;
+			  -webkit-line-clamp: 3;
+			  -webkit-box-orient: vertical;
+		    }
+
+
+		    #course, #track {
+		    	width:80%;
+		    }
+
+		}
+	}
+}
+
+#home {
+
+	.row {
+		clear:both;
+		max-width: 600px;
+	    margin-left: auto;
+	    margin-right: auto;
+	}
+
+
+
+}
