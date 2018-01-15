@@ -250,7 +250,7 @@ const fragment /*: ConcreteFragment*/ = {
                 },
                 {
                   "kind": "FragmentSpread",
-                  "name": "BibleNote_note",
+                  "name": "NoteThumbnail_note",
                   "args": null
                 }
               ],

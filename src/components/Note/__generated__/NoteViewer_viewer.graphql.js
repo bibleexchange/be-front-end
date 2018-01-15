@@ -17,7 +17,7 @@ export type NoteViewer_viewer = {|
 const fragment /*: ConcreteFragment*/ = {
   "argumentDefinitions": [],
   "kind": "Fragment",
-  "metadata": null,
+  "metadata": {},
   "name": "NoteViewer_viewer",
   "selections": [
     {
@@ -29,7 +29,7 @@ const fragment /*: ConcreteFragment*/ = {
     },
     {
       "kind": "FragmentSpread",
-      "name": "SimpleBibleVerse_viewer",
+      "name": "BibleWidget_viewer",
       "args": null
     }
   ],

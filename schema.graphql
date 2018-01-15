@@ -22,7 +22,7 @@ type ActivityConnection {
 
   # Information to aid in pagination
   edges: [ActivityEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -82,7 +82,7 @@ type BibleBookConnection {
 
   # Information to aid in pagination
   edges: [BibleBookEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -121,7 +121,7 @@ type BibleChapterConnection {
 
   # Information to aid in pagination
   edges: [BibleChapterEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -140,7 +140,7 @@ type BibleConnection {
 
   # Information to aid in pagination
   edges: [BibleEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -218,7 +218,7 @@ type BibleVerse2Connection {
 
   # Information to aid in pagination
   edges: [BibleVerse2Edge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -237,7 +237,7 @@ type BibleVerseConnection {
 
   # Information to aid in pagination
   edges: [BibleVerseEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -275,7 +275,7 @@ type CourseConnection {
 
   # Information to aid in pagination
   edges: [CourseEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 input CourseCreateInput {
@@ -420,7 +420,7 @@ type CrossReferenceConnection {
 
   # Information to aid in pagination
   edges: [CrossReferenceEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -488,7 +488,7 @@ type LessonConnection {
 
   # Information to aid in pagination
   edges: [LessonEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 input LessonCreateInput {
@@ -569,7 +569,7 @@ type LibraryConnection {
 
   # Information to aid in pagination
   edges: [LibraryEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -612,7 +612,7 @@ type NavHistoryConnection {
 
   # Information to aid in pagination
   edges: [NavHistoryEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -662,7 +662,7 @@ type NoteConnection {
 
   # Information to aid in pagination
   edges: [NoteEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -711,30 +711,6 @@ type PageInfo {
   endCursor: String
 }
 
-# PageInfo for a connection
-type PagesInfo {
-  # When paginating forwards, are there more items?
-  hasNextPage: Boolean!
-
-  # When paginating backwards, are there more items?
-  hasPreviousPage: Boolean!
-
-  # When paginating backwards, the cursor to continue.
-  startCursor: String
-
-  # When paginating forwards, the cursor to continue.
-  perPage: Int
-
-  # When paginating forwards, the cursor to continue.
-  currentPage: Int
-
-  # When paginating forwards, the cursor to continue.
-  totalCount: Int
-
-  # When paginating forwards, the cursor to continue.
-  totalPagesCount: Int
-}
-
 # A Resource
 type Resource implements Node {
   # The ID of an object
@@ -752,7 +728,7 @@ type ResourceConnection {
 
   # Information to aid in pagination
   edges: [ResourceEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -781,7 +757,7 @@ type ResourceSectionConnection {
 
   # Information to aid in pagination
   edges: [ResourceSectionEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -791,6 +767,35 @@ type ResourceSectionEdge {
 
   # A cursor for use in pagination
   cursor: String!
+}
+
+# ResultInfo for a connection
+type ResultInfo {
+  id: String
+  first: String
+  nextChapterURL: String
+  previousChapterURL: String
+
+  # When paginating forwards, the cursor to continue.
+  totalCount: Int
+
+  # When paginating forwards, the cursor to continue.
+  perPage: Int
+
+  # When paginating forwards, the cursor to continue.
+  totalPagesCount: Int
+
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+
+  # When paginating forwards, the cursor to continue.
+  currentPage: Int
 }
 
 # A chapter of a book of the Holy Bible
@@ -852,7 +857,7 @@ type StatementConnection {
 
   # Information to aid in pagination
   edges: [StatementEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -885,7 +890,7 @@ type StepConnection {
 
   # Information to aid in pagination
   edges: [StepEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -917,7 +922,7 @@ type TrackConnection {
 
   # Information to aid in pagination
   edges: [TrackEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -963,7 +968,7 @@ type UserConnection {
 
   # Information to aid in pagination
   edges: [UserEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # A user course.
@@ -992,7 +997,7 @@ type UserCourseConnection {
 
   # Information to aid in pagination
   edges: [UserCourseEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -1038,7 +1043,7 @@ type UserLessonConnection {
 
   # Information to aid in pagination
   edges: [UserLessonEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection
@@ -1084,7 +1089,7 @@ type UserNoteConnection {
 
   # Information to aid in pagination
   edges: [UserNoteEdge]
-  resultsInfo: PagesInfo
+  info: ResultInfo
 }
 
 # An edge in a connection

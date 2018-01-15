@@ -12,9 +12,11 @@ export type NoteThumbnail_note = {|
   +id: string;
   +created_at: ?string;
   +title: ?string;
+  +body: ?string;
   +tags: ?$ReadOnlyArray<?string>;
   +author: ?{|
     +name: ?string;
+    +email: ?string;
   |};
   +verse: ?{|
     +id: string;
@@ -60,6 +62,13 @@ const fragment /*: ConcreteFragment*/ = {
       "kind": "ScalarField",
       "alias": null,
       "args": null,
+      "name": "body",
+      "storageKey": null
+    },
+    {
+      "kind": "ScalarField",
+      "alias": null,
+      "args": null,
       "name": "tags",
       "storageKey": null
     },
@@ -76,6 +85,13 @@ const fragment /*: ConcreteFragment*/ = {
           "alias": null,
           "args": null,
           "name": "name",
+          "storageKey": null
+        },
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "args": null,
+          "name": "email",
           "storageKey": null
         }
       ],

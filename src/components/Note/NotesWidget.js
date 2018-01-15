@@ -122,7 +122,7 @@ const FragmentContainer =  createFragmentContainer(NotesWidget, graphql`
   }
 
   fragment NotesWidget_notes on NoteConnection {
-       resultsInfo {
+       info {
          totalCount
          perPage
          totalPagesCount

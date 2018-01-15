@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 6495871b8d4bdaaba8bfa724578f3642
+ * @relayHash 543bbd769cdebab1138726855d985f3e
  */
 
 /* eslint-disable */
@@ -27,7 +27,7 @@ export type HomeViewerQueryResponse = {|
         |};
       |}>;
     |};
-    +bibleChapter: ?{| |};
+    +bibleVerses: ?{| |};
     +bibleVerse: ?{| |};
   |};
 |};
@@ -78,9 +78,8 @@ query HomeViewerQuery(
         hasNextPage
       }
     }
-    bibleChapter(id: $reference) {
-      ...BibleWidget_bibleChapter
-      id
+    bibleVerses(id: $reference) {
+      ...BibleWidget_verses
     }
     bibleVerse(id: $reference) {
       ...BibleWidget_bibleVerse
@@ -130,25 +129,32 @@ fragment UserTrackList_userTracks on TrackConnection {
   }
 }
 
-fragment BibleWidget_bibleChapter on BibleChapter {
-  id
-  url
-  reference
-  nextChapter {
-    id
-    reference
+fragment BibleWidget_verses on BibleVerseConnection {
+  pageInfo {
+    hasNextPage
+    hasPreviousPage
+    startCursor
+    endCursor
   }
-  previousChapter {
-    id
-    reference
+  info {
+    nextChapterURL
+    previousChapterURL
   }
-  verses(first: 200) {
-    edges {
-      node {
-        ...BibleVerse_verse
+  edges {
+    cursor
+    node {
+      ...BibleVerse_verse
+      id
+      body
+      reference
+      verseNumber
+      chapter {
         id
-        verseNumber
-        body
+        order_by
+      }
+      book {
+        id
+        title
       }
     }
   }
@@ -194,7 +200,7 @@ fragment FocusedBibleVerse_verse on BibleVerse {
         id
         title
         body
-        ...BibleNote_note
+        ...NoteThumbnail_note
       }
     }
   }
@@ -214,18 +220,15 @@ fragment CrossReference_reference on CrossReference {
   }
 }
 
-fragment BibleNote_note on Note {
-  ...NoteThumbnail_note
-  id
-}
-
 fragment NoteThumbnail_note on Note {
   id
   created_at
   title
+  body
   tags
   author {
     name
+    email
     id
   }
   verse {
@@ -277,12 +280,7 @@ fragment BibleVerse_viewer on Viewer {
 
 fragment FocusedBibleVerse_viewer on Viewer {
   id
-  ...BibleNote_viewer
-}
-
-fragment BibleNote_viewer on Viewer {
   ...NoteThumbnail_viewer
-  id
 }
 
 fragment NoteThumbnail_viewer on Viewer {
@@ -566,13 +564,13 @@ const batch /*: ConcreteBatch*/ = {
                 "type": "String"
               }
             ],
-            "concreteType": "BibleChapter",
-            "name": "bibleChapter",
+            "concreteType": "BibleVerseConnection",
+            "name": "bibleVerses",
             "plural": false,
             "selections": [
               {
                 "kind": "FragmentSpread",
-                "name": "BibleWidget_bibleChapter",
+                "name": "BibleWidget_verses",
                 "args": null
               }
             ],
@@ -1035,51 +1033,44 @@ const batch /*: ConcreteBatch*/ = {
                 "type": "String"
               }
             ],
-            "concreteType": "BibleChapter",
-            "name": "bibleChapter",
+            "concreteType": "BibleVerseConnection",
+            "name": "bibleVerses",
             "plural": false,
             "selections": [
               {
-                "kind": "ScalarField",
-                "alias": null,
-                "args": null,
-                "name": "id",
-                "storageKey": null
-              },
-              {
-                "kind": "ScalarField",
-                "alias": null,
-                "args": null,
-                "name": "url",
-                "storageKey": null
-              },
-              {
-                "kind": "ScalarField",
-                "alias": null,
-                "args": null,
-                "name": "reference",
-                "storageKey": null
-              },
-              {
                 "kind": "LinkedField",
                 "alias": null,
                 "args": null,
-                "concreteType": "BibleChapter",
-                "name": "nextChapter",
+                "concreteType": "PageInfo",
+                "name": "pageInfo",
                 "plural": false,
                 "selections": [
                   {
                     "kind": "ScalarField",
                     "alias": null,
                     "args": null,
-                    "name": "id",
+                    "name": "hasNextPage",
                     "storageKey": null
                   },
                   {
                     "kind": "ScalarField",
                     "alias": null,
                     "args": null,
-                    "name": "reference",
+                    "name": "hasPreviousPage",
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "args": null,
+                    "name": "startCursor",
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "args": null,
+                    "name": "endCursor",
                     "storageKey": null
                   }
                 ],
@@ -1089,22 +1080,22 @@ const batch /*: ConcreteBatch*/ = {
                 "kind": "LinkedField",
                 "alias": null,
                 "args": null,
-                "concreteType": "BibleChapter",
-                "name": "previousChapter",
+                "concreteType": "ResultInfo",
+                "name": "info",
                 "plural": false,
                 "selections": [
                   {
                     "kind": "ScalarField",
                     "alias": null,
                     "args": null,
-                    "name": "id",
+                    "name": "nextChapterURL",
                     "storageKey": null
                   },
                   {
                     "kind": "ScalarField",
                     "alias": null,
                     "args": null,
-                    "name": "reference",
+                    "name": "previousChapterURL",
                     "storageKey": null
                   }
                 ],
@@ -1113,32 +1104,60 @@ const batch /*: ConcreteBatch*/ = {
               {
                 "kind": "LinkedField",
                 "alias": null,
-                "args": [
-                  {
-                    "kind": "Literal",
-                    "name": "first",
-                    "value": 200,
-                    "type": "Int"
-                  }
-                ],
-                "concreteType": "BibleVerseConnection",
-                "name": "verses",
-                "plural": false,
+                "args": null,
+                "concreteType": "BibleVerseEdge",
+                "name": "edges",
+                "plural": true,
                 "selections": [
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "args": null,
+                    "name": "cursor",
+                    "storageKey": null
+                  },
                   {
                     "kind": "LinkedField",
                     "alias": null,
                     "args": null,
-                    "concreteType": "BibleVerseEdge",
-                    "name": "edges",
-                    "plural": true,
+                    "concreteType": "BibleVerse",
+                    "name": "node",
+                    "plural": false,
                     "selections": [
+                      {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "args": null,
+                        "name": "id",
+                        "storageKey": null
+                      },
+                      {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "args": null,
+                        "name": "body",
+                        "storageKey": null
+                      },
+                      {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "args": null,
+                        "name": "verseNumber",
+                        "storageKey": null
+                      },
+                      {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "args": null,
+                        "name": "reference",
+                        "storageKey": null
+                      },
                       {
                         "kind": "LinkedField",
                         "alias": null,
                         "args": null,
-                        "concreteType": "BibleVerse",
-                        "name": "node",
+                        "concreteType": "SimpleBibleChapter",
+                        "name": "chapter",
                         "plural": false,
                         "selections": [
                           {
@@ -1152,21 +1171,32 @@ const batch /*: ConcreteBatch*/ = {
                             "kind": "ScalarField",
                             "alias": null,
                             "args": null,
-                            "name": "body",
+                            "name": "order_by",
+                            "storageKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      },
+                      {
+                        "kind": "LinkedField",
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "BibleBook",
+                        "name": "book",
+                        "plural": false,
+                        "selections": [
+                          {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "args": null,
+                            "name": "id",
                             "storageKey": null
                           },
                           {
                             "kind": "ScalarField",
                             "alias": null,
                             "args": null,
-                            "name": "verseNumber",
-                            "storageKey": null
-                          },
-                          {
-                            "kind": "ScalarField",
-                            "alias": null,
-                            "args": null,
-                            "name": "reference",
+                            "name": "title",
                             "storageKey": null
                           }
                         ],
@@ -1176,7 +1206,7 @@ const batch /*: ConcreteBatch*/ = {
                     "storageKey": null
                   }
                 ],
-                "storageKey": "verses{\"first\":200}"
+                "storageKey": null
               }
             ],
             "storageKey": null
@@ -1474,6 +1504,13 @@ const batch /*: ConcreteBatch*/ = {
                                 "kind": "ScalarField",
                                 "alias": null,
                                 "args": null,
+                                "name": "email",
+                                "storageKey": null
+                              },
+                              {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "args": null,
                                 "name": "id",
                                 "storageKey": null
                               }
@@ -1607,7 +1644,7 @@ const batch /*: ConcreteBatch*/ = {
       }
     ]
   },
-  "text": "query HomeViewerQuery(\n  $token: String!\n  $tracksPageSize: Int!\n  $coursesPageSize: Int!\n  $reference: String!\n  $notesPageSize: Int!\n  $crossReferencesPageSize: Int!\n) {\n  viewer(token: $token) {\n    ...CourseList_viewer\n    ...Navbar_viewer\n    ...BibleWidget_viewer\n    ...UserTrackList_viewer\n    id\n    authenticated\n    courses(first: $coursesPageSize, orderBy: \"created_at:DESC\", filter: \"public:1\") {\n      ...CourseList_courses\n      edges {\n        node {\n          id\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n    userTracks(first: $tracksPageSize) {\n      ...UserTrackList_userTracks\n      edges {\n        node {\n          id\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n    bibleChapter(id: $reference) {\n      ...BibleWidget_bibleChapter\n      id\n    }\n    bibleVerse(id: $reference) {\n      ...BibleWidget_bibleVerse\n      id\n    }\n  }\n}\n\nfragment CourseList_viewer on Viewer {\n  ...Course_viewer\n}\n\nfragment Navbar_viewer on Viewer {\n  authenticated\n  email\n  name\n}\n\nfragment BibleWidget_viewer on Viewer {\n  ...BibleVerse_viewer\n  ...FocusedBibleVerse_viewer\n  id\n}\n\nfragment UserTrackList_viewer on Viewer {\n  ...UserTrack_viewer\n  authenticated\n}\n\nfragment CourseList_courses on CourseConnection {\n  edges {\n    node {\n      id\n      title\n      description\n      ...Course_course\n    }\n  }\n}\n\nfragment UserTrackList_userTracks on TrackConnection {\n  edges {\n    node {\n      id\n      ...UserTrack_userTrack\n    }\n  }\n}\n\nfragment BibleWidget_bibleChapter on BibleChapter {\n  id\n  url\n  reference\n  nextChapter {\n    id\n    reference\n  }\n  previousChapter {\n    id\n    reference\n  }\n  verses(first: 200) {\n    edges {\n      node {\n        ...BibleVerse_verse\n        id\n        verseNumber\n        body\n      }\n    }\n  }\n}\n\nfragment BibleWidget_bibleVerse on BibleVerse {\n  ...FocusedBibleVerse_verse\n  previous {\n    reference\n    id\n  }\n  next {\n    reference\n    id\n  }\n}\n\nfragment FocusedBibleVerse_verse on BibleVerse {\n  id\n  reference\n  body\n  verseNumber\n  chapterNumber\n  chapterURL\n  crossReferences(first: $crossReferencesPageSize) {\n    edges {\n      node {\n        id\n        ...CrossReference_reference\n      }\n    }\n  }\n  book {\n    id\n    title\n  }\n  notes(first: $notesPageSize) {\n    pageInfo {\n      hasNextPage\n    }\n    edges {\n      node {\n        id\n        title\n        body\n        ...BibleNote_note\n      }\n    }\n  }\n}\n\nfragment CrossReference_reference on CrossReference {\n  id\n  reference\n  verses {\n    edges {\n      node {\n        id\n        reference\n        body\n      }\n    }\n  }\n}\n\nfragment BibleNote_note on Note {\n  ...NoteThumbnail_note\n  id\n}\n\nfragment NoteThumbnail_note on Note {\n  id\n  created_at\n  title\n  tags\n  author {\n    name\n    id\n  }\n  verse {\n    id\n    body\n    reference\n    url\n    notesCount\n    verseNumber\n    quote\n  }\n}\n\nfragment BibleVerse_verse on BibleVerse {\n  id\n  body\n  verseNumber\n  reference\n}\n\nfragment UserTrack_userTrack on Track {\n  id\n  course {\n    id\n    title\n  }\n}\n\nfragment Course_course on Course {\n  id\n  title\n  description\n  updated_at\n  created_at\n  owner {\n    id\n    name\n  }\n}\n\nfragment UserTrack_viewer on Viewer {\n  id\n}\n\nfragment BibleVerse_viewer on Viewer {\n  id\n  authenticated\n}\n\nfragment FocusedBibleVerse_viewer on Viewer {\n  id\n  ...BibleNote_viewer\n}\n\nfragment BibleNote_viewer on Viewer {\n  ...NoteThumbnail_viewer\n  id\n}\n\nfragment NoteThumbnail_viewer on Viewer {\n  authenticated\n}\n\nfragment Course_viewer on Viewer {\n  id\n}\n"
+  "text": "query HomeViewerQuery(\n  $token: String!\n  $tracksPageSize: Int!\n  $coursesPageSize: Int!\n  $reference: String!\n  $notesPageSize: Int!\n  $crossReferencesPageSize: Int!\n) {\n  viewer(token: $token) {\n    ...CourseList_viewer\n    ...Navbar_viewer\n    ...BibleWidget_viewer\n    ...UserTrackList_viewer\n    id\n    authenticated\n    courses(first: $coursesPageSize, orderBy: \"created_at:DESC\", filter: \"public:1\") {\n      ...CourseList_courses\n      edges {\n        node {\n          id\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n    userTracks(first: $tracksPageSize) {\n      ...UserTrackList_userTracks\n      edges {\n        node {\n          id\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n    bibleVerses(id: $reference) {\n      ...BibleWidget_verses\n    }\n    bibleVerse(id: $reference) {\n      ...BibleWidget_bibleVerse\n      id\n    }\n  }\n}\n\nfragment CourseList_viewer on Viewer {\n  ...Course_viewer\n}\n\nfragment Navbar_viewer on Viewer {\n  authenticated\n  email\n  name\n}\n\nfragment BibleWidget_viewer on Viewer {\n  ...BibleVerse_viewer\n  ...FocusedBibleVerse_viewer\n  id\n}\n\nfragment UserTrackList_viewer on Viewer {\n  ...UserTrack_viewer\n  authenticated\n}\n\nfragment CourseList_courses on CourseConnection {\n  edges {\n    node {\n      id\n      title\n      description\n      ...Course_course\n    }\n  }\n}\n\nfragment UserTrackList_userTracks on TrackConnection {\n  edges {\n    node {\n      id\n      ...UserTrack_userTrack\n    }\n  }\n}\n\nfragment BibleWidget_verses on BibleVerseConnection {\n  pageInfo {\n    hasNextPage\n    hasPreviousPage\n    startCursor\n    endCursor\n  }\n  info {\n    nextChapterURL\n    previousChapterURL\n  }\n  edges {\n    cursor\n    node {\n      ...BibleVerse_verse\n      id\n      body\n      reference\n      verseNumber\n      chapter {\n        id\n        order_by\n      }\n      book {\n        id\n        title\n      }\n    }\n  }\n}\n\nfragment BibleWidget_bibleVerse on BibleVerse {\n  ...FocusedBibleVerse_verse\n  previous {\n    reference\n    id\n  }\n  next {\n    reference\n    id\n  }\n}\n\nfragment FocusedBibleVerse_verse on BibleVerse {\n  id\n  reference\n  body\n  verseNumber\n  chapterNumber\n  chapterURL\n  crossReferences(first: $crossReferencesPageSize) {\n    edges {\n      node {\n        id\n        ...CrossReference_reference\n      }\n    }\n  }\n  book {\n    id\n    title\n  }\n  notes(first: $notesPageSize) {\n    pageInfo {\n      hasNextPage\n    }\n    edges {\n      node {\n        id\n        title\n        body\n        ...NoteThumbnail_note\n      }\n    }\n  }\n}\n\nfragment CrossReference_reference on CrossReference {\n  id\n  reference\n  verses {\n    edges {\n      node {\n        id\n        reference\n        body\n      }\n    }\n  }\n}\n\nfragment NoteThumbnail_note on Note {\n  id\n  created_at\n  title\n  body\n  tags\n  author {\n    name\n    email\n    id\n  }\n  verse {\n    id\n    body\n    reference\n    url\n    notesCount\n    verseNumber\n    quote\n  }\n}\n\nfragment BibleVerse_verse on BibleVerse {\n  id\n  body\n  verseNumber\n  reference\n}\n\nfragment UserTrack_userTrack on Track {\n  id\n  course {\n    id\n    title\n  }\n}\n\nfragment Course_course on Course {\n  id\n  title\n  description\n  updated_at\n  created_at\n  owner {\n    id\n    name\n  }\n}\n\nfragment UserTrack_viewer on Viewer {\n  id\n}\n\nfragment BibleVerse_viewer on Viewer {\n  id\n  authenticated\n}\n\nfragment FocusedBibleVerse_viewer on Viewer {\n  id\n  ...NoteThumbnail_viewer\n}\n\nfragment NoteThumbnail_viewer on Viewer {\n  authenticated\n}\n\nfragment Course_viewer on Viewer {\n  id\n}\n"
 };
 
 module.exports = batch;

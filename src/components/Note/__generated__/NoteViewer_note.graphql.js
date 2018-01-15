@@ -93,11 +93,6 @@ const fragment /*: ConcreteFragment*/ = {
       "plural": false,
       "selections": [
         {
-          "kind": "FragmentSpread",
-          "name": "SimpleBibleVerse_verse",
-          "args": null
-        },
-        {
           "kind": "ScalarField",
           "alias": null,
           "args": null,

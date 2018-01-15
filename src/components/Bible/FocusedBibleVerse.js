@@ -3,9 +3,9 @@ import {
   createFragmentContainer,
   graphql
 } from 'react-relay';
-import { withRouter, Link } from 'react-router-dom';
-import BibleNote from './BibleNote'
+import { withRouter, Link } from 'react-router-dom'
 import CrossReference from './CrossReference'
+import NoteThumbnail from '../Note/NoteThumbnail'
 
 class FocusedBibleVerse extends React.Component {
 
@@ -89,7 +89,7 @@ class FocusedBibleVerse extends React.Component {
 
           {notesHeading}
           {notes.map(({node}) =>
-            <BibleNote key={node.id} note={node} viewer={this.props.viewer} selectNote={this._editNote.bind(this)} />
+            <NoteThumbnail key={node.id} note={node} viewer={this.props.viewer} handleSelect={this._editNote.bind(this)}/>
           )}
 
           {noNotes}
@@ -119,7 +119,7 @@ class FocusedBibleVerse extends React.Component {
 const FragmentContainer =  createFragmentContainer(FocusedBibleVerse, graphql`
   fragment FocusedBibleVerse_viewer on Viewer {
     id
-    ...BibleNote_viewer
+    ...NoteThumbnail_viewer
   }
 
   fragment FocusedBibleVerse_verse on BibleVerse {
@@ -150,7 +150,7 @@ const FragmentContainer =  createFragmentContainer(FocusedBibleVerse, graphql`
           id
           title
           body
-          ...BibleNote_note
+          ...NoteThumbnail_note
         }
       }
     }

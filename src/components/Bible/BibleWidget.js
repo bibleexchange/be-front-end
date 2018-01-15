@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 import BibleVerse from './BibleVerse'
 import FocusedBibleVerse from './FocusedBibleVerse'
+import SimpleBibleVerse from './SimpleBibleVerse'
 import BibleNavigation from './BibleNavigation'
 import {
   createFragmentContainer,
@@ -28,14 +29,16 @@ class BibleWidget extends React.Component {
     let fullReference = false
     let simple = this.props.options.simple
     let baseURL = this.props.options.baseURL? this.props.options.baseURL:"/bible/"
+    let heading = null
+    let hiddenHeading = null
 
      if(this.props.options.baseURL !== undefined){
       baseURL = this.props.options.baseURL
      }
 
     if(this.props.bibleVerse !== null){
-      verse = <FocusedBibleVerse verse={this.props.bibleVerse} baseURL={baseURL} viewer={this.props.viewer} moreNotes={this.props.moreNotes} simple={simple}/>
-      message =null
+      verse = <FocusedBibleVerse verse={this.props.bibleVerse} simpleVerse={this.props.simpleVerse} baseURL={baseURL} viewer={this.props.viewer} moreNotes={this.props.moreNotes} simple={simple}/>
+      message = null
 
       previousReference = this.props.bibleVerse.previous.reference
       nextReference = this.props.bibleVerse.next.reference
@@ -45,26 +48,26 @@ class BibleWidget extends React.Component {
       onlyChapterViewBack = null
       onlyChapterViewNext = null
 
-    }else if(this.props.bibleChapter !== null && this.props.bibleChapter !== undefined){
-      verses = this.props.bibleChapter.verses.edges
-      message = null
+    }else if(this.props.simpleVerse !== undefined){
+      verse = <SimpleBibleVerse verse={this.props.simpleVerse} />
+      message = ""
 
-      if(this.props.bibleChapter.previousChapter.id !== this.props.bibleChapter.id){
-        previousReference = this.props.bibleChapter.previousChapter.reference
+    }
+
+    if(this.props.verses !== null && this.props.verses !== undefined && this.props.verses.edges.length >= 2){
+      verses = this.props.verses.edges
+      message = null
+      verse = null
+
+        previousReference = this.props.verses.info.previousChapterURL
         onlyChapterViewBack = <Link className="be-button-back" to={baseURL+previousReference}>previous</Link>
         previousURL = baseURL+ previousReference
-      }
 
-      if(this.props.bibleChapter.nextChapter.id !== this.props.bibleChapter.id){
-        nextReference = this.props.bibleChapter.nextChapter.reference
+        nextReference = this.props.verses.info.nextChapterURL
         onlyChapterViewNext = <Link className="be-button" to={baseURL+nextReference}>next</Link> 
-        nextURL = baseURL+ nextReference
-      }
-      
-      if(this.props.bibleChapter.reference === null){
-        fullReference = true
-      }
-
+        nextURL = baseURL+ nextReference    
+        fullReference = false
+  
     }
 
     if(simple){
@@ -73,11 +76,11 @@ class BibleWidget extends React.Component {
           <h2>{this.props.reference}</h2>
           {message}
 
-          {verse}
-
           {verses.map(function(v){
             return <div key={v.node.id}><BibleVerse baseURL={baseURL} verse={v.node} viewer={viewer} fullReference={fullReference}/></div>
           })}
+
+          {verse}
 
           {onlyChapterViewBack}
           {onlyChapterViewNext}
@@ -95,11 +98,19 @@ class BibleWidget extends React.Component {
 
           {message}
 
-          {verse}
-
           {verses.map(function(v){
-            return <div key={v.node.id}><BibleVerse baseURL={baseURL} verse={v.node} viewer={viewer} fullReference={fullReference}/></div>
+
+            if(v.node.book.id+v.node.chapter.id !== hiddenHeading){
+              hiddenHeading = v.node.book.id+v.node.chapter.id
+              heading = <h2>{v.node.book.title} {v.node.chapter.order_by}</h2>
+            }else{
+              heading = null
+            }
+
+            return <div key={v.node.id}>{heading}<BibleVerse baseURL={baseURL} verse={v.node} viewer={viewer} fullReference={fullReference}/></div>
           })}
+
+          {verse}
 
           {onlyChapterViewBack}
           {onlyChapterViewNext}
@@ -117,29 +128,36 @@ export default createFragmentContainer(BibleWidget, graphql`
     id  
   }
 
-  fragment BibleWidget_bibleChapter on BibleChapter {
-    id 
-    url
-    reference
-    nextChapter{
-      id
-      reference
+  fragment BibleWidget_verses on BibleVerseConnection {
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      info{
+        nextChapterURL
+        previousChapterURL
+      }
+      edges {
+        cursor
+        node {
+          ...BibleVerse_verse
+          id
+          body
+          reference
+          verseNumber
+          chapter {
+            id
+            order_by
+          }
+          book {
+            id
+            title
+          }
+        }
+      }
     }
-    previousChapter{
-      id
-      reference
-    }
-          verses(first:200){
-            edges{
-              node{
-                ...BibleVerse_verse
-                id
-                verseNumber
-                body
-              }
-            }
-     }
-}
 
   fragment BibleWidget_bibleVerse on BibleVerse {
     ...FocusedBibleVerse_verse

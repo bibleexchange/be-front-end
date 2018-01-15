@@ -14,8 +14,8 @@ const ScriptureViewerQuery = graphql`
     viewer (token: $token){
       ...BibleWidget_viewer
 
-       bibleChapter (id:$reference){
-          ...BibleWidget_bibleChapter
+       bibleVerses (id:$reference){
+          ...BibleWidget_verses
       }
 
       bibleVerse (id:$reference){
@@ -69,7 +69,7 @@ class Scripture extends Component {
                     <div id="bible">
                           <BibleWidget 
                             viewer={props.viewer} 
-                            bibleChapter={props.viewer.bibleChapter} 
+                            verses={props.viewer.bibleVerses} 
                             bibleVerse={props.viewer.bibleVerse}
                             updateBibleReference={this.updateBibleReference.bind(this)} 
                             reference={this.props.data.value.reference}

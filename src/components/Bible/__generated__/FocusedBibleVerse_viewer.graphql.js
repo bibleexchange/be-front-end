@@ -29,7 +29,7 @@ const fragment /*: ConcreteFragment*/ = {
     },
     {
       "kind": "FragmentSpread",
-      "name": "BibleNote_viewer",
+      "name": "NoteThumbnail_viewer",
       "args": null
     }
   ],

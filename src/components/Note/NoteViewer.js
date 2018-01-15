@@ -4,61 +4,97 @@ import {
   createFragmentContainer,
   graphql,
 } from 'react-relay/compat';
-import SimpleBibleVerse from '../Bible/SimpleBibleVerse'
+import BibleWidget from '../Bible/BibleWidget'
 import Document from '../MyNotes/Document'
-
+import {configure, get} from './NoteUtil'
 import './Note.scss'
 
 class NoteViewer extends React.Component {
 
 componentWillMount() {
-     let config = this.figureConfig(this.props.note)
+     let config = configure(this.props.note)
 
     this.state ={
       options:{
         editDoc: false,
-        numbers: true,
-        markup: true,
+        numbers: false,
         json: false,
-        meta: false,
-        history: false
+        meta: true,
+        history: false,
+        contextVals: [0],
+        context: "preview",
+        currentPage: 0
       },
-      config: config,
-      oldConfig: config,
-      rawConfig: JSON.stringify(config),
 
-      newMeta: {key:"",value:""},
-      newSectionTitle: "",
-      newUnitTitle:"",
-      newLine:{markup:"p",value:"",index: config.lines.length},
-      error: null,
-      editState:[],
-      docSaved: true
-
+      config: config
     }
+
   }
 
   componentWillReceiveProps(newProps){
     if(this.props.note !== undefined && this.props.note !== null && this.props.note.config !== null && JSON.stringify(newProps.viewer.note.config) !== JSON.stringify(this.state.oldConfig)){
       let newState = this.state
-      newState.oldConfig = this.figureConfig(newProps.note)
-      newState.config = this.figureConfig(newProps.note)
-      newState.rawConfig = newProps.note.body
-
-      newState.docSaved = true
+      newState.config = configure(newProps.note)
       this.setState(newState)
     }
   }
 
   render() {
-
+    let next = null
     let component = <h1>This note does not exist. Try <Link to={"/notes"}>searching</Link> for something else.</h1>;
     if (this.props.note !== null && this.props.note !== undefined && this.props.note !== '') {
       component = this.noteRender()
     }
 
+    if(this.hasNextPage()){
+      next = <button onClick={this.nextPage.bind(this)}>next</button>
+    }
+
     return (
-          <div>{component}</div>
+          <div>
+
+          <nav>
+            {next}
+          </nav>
+
+          <div id="note">
+            <h1>{this.state.config.meta.get("title")}</h1>                        
+          
+            {component}
+
+             <details open>
+            <summary>Main Scripture:</summary>
+              <BibleWidget 
+              viewer={this.props.viewer} 
+              bibleChapter={null} 
+              bibleVerse={null}
+              simpleVerse={this.props.note.verse}
+              updateBibleReference={{}} 
+              reference={this.props.note.verse.reference}
+              moreNotes={false}
+              options={{simple:true}}
+              />
+            </details>
+
+            <details>
+            <summary>info:</summary>
+
+            {this.state.config.meta.map(function(m, index){
+              if(m === null){
+                return null
+              }else if(m.key === "scripture"){
+                return <p key={index}><strong>{m.key}:</strong> <Link to={"/bible/"+m.value}>{m.value}</Link></p>
+              }else if(Array.isArray(m.value)){
+                return <p key={index}><strong>{m.key}:</strong> #{m.value.join(" #")}</p>
+              }else{  
+                return <p key={index}><strong>{m.key}:</strong> {m.value}</p>
+              }
+            })}
+            
+        </details>
+
+          </div>
+          </div>
     );
   }
 
@@ -67,72 +103,25 @@ componentWillMount() {
     return ( <Document 
             state={Object.assign({},this.state)}
             handleFullEdit={this.handleFullEdit}   
-            handleToggleEdit={this.handleToggleEdit}
             handleDocChange={this.handleDocChange}
             reportError={this.reportError}
             />)
   }
 
-  noteRenderDISABLED(){
-
-    return (
-
-      <div id="note">
-        <main dangerouslySetInnerHTML={{ __html: this.props.note.output.body }} />
-
-        <aside>
-
-        <h1>'{this.props.note.title}' Noted by {this.props.note.author.name}</h1>
-
-        <h2>TEXT: <Link to={this.props.note.verse.url}>{this.props.note.verse.reference}</Link></h2>
-        <SimpleBibleVerse viewer={this.props.viewer} verse={this.props.note.verse} />
-
-        <h2>TAGS</h2>
-        <p>{this.props.note.tags.map(function (t, key) {
-          let x = null;
-          if (t !== '') { x = <Link key={key} style={{ marginRight: '10px' }} to={'/notes/tag/' + t.trim()} >#{t}</Link>; }
-          return x;
-        })}</p>
-
-        </aside>
-      </div>
-
-      );
+  nextPage(){
+    let newState = Object.assign({},this.state)
+    newState.currentPage += 1
+    newState.options.contextVals = [newState.currentPage]
+    this.setState(newState)
   }
 
-   figureConfig(note){
-
-  let config = {}
-  let meta = []
-  let history = []
-
-  if(note !== null && note.body !== null){
-      
-      if(note.body.substring(0,1) === "{"){
-        config = JSON.parse(note.body)
-      }else{
-
-        config = {
-          lines: [{markup:"md", value:note.body}],
-          meta: [{key:"title",value:note.title}]
-        }
-      }
-      
-      if(config.lines === null || config.lines === undefined){config.lines = []}
-      if(config.meta === null || config.meta === undefined){config.meta = meta}
-      if(config.history === null || config.history === undefined){config.history = history}
+  hasNextPage(){
+    if(this.state.config.pages.length > this.state.currentPage){
+      return true
+    }else{
+      return false
     }
-    
-    if(Object.keys(config).length === 0 && config.constructor === Object){
-      config = {
-      meta : meta,
-      lines : [],
-      history: []
-      }
-    }
-
-    return config
-}
+  }
 
 }
 
@@ -141,9 +130,9 @@ NoteViewer.propTypes = {
 };
 
 const FragmentContainer =  createFragmentContainer(NoteViewer, graphql`
-  fragment NoteViewer_viewer on Viewer {
+  fragment NoteViewer_viewer on Viewer @relay(mask: true) {
     authenticated
-    ...SimpleBibleVerse_viewer
+    ...BibleWidget_viewer
   }
 
   fragment NoteViewer_note on Note {
@@ -155,7 +144,6 @@ const FragmentContainer =  createFragmentContainer(NoteViewer, graphql`
         name
       }
     verse{
-      ...SimpleBibleVerse_verse
       id
       body
       reference

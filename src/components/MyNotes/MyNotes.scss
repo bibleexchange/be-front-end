@@ -8,6 +8,7 @@
 	left:0;
 	border:none;
 	background-color:white;
+	margin:15px;
 }
 
 #my-notes {
@@ -17,12 +18,24 @@
 }
 
 .my-notes-true {
+	padding:0;
+	margin:35px;
 	li {display:block;}
 }
 
+#search-title {
+	width:100%;
+	line-height:50px;
+	text-align: center;
+	font-size: 1.5rem;
+	margin: 0;
+} 
+
 	nav {
-		background-color:$GRAY;
 		li { display:inline; margin-bottom: 10px;}
+		margin:0;
+		padding:0;
+		overflow:hidden;
 	}
 
 	main {
@@ -34,6 +47,8 @@
 
 			textarea {
 			min-height: 600px;
+			display:block;
+			width:100%;
 			padding: 15px;
 			}
 
@@ -66,4 +81,72 @@
 
 		}
 	}
+}
+
+.menu {
+  display: block;
+}
+.menu > div {
+
+  z-index: 2;
+  top: 0;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+.menu > div.left {
+  width:100%;
+}
+
+.menu > .visible {
+  display: block;
+}
+
+.menu button {
+  margin: 15px;
+  width:90%;
+}
+
+.menu > div > .menu-item {
+  float: left;
+  width: 45%;
+  margin: 0;
+  padding: 10px 15px;
+  border-bottom: solid 1px #555;
+  cursor: pointer;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  margin: 10px;
+  background-color:white;
+  overflow:hidden;
+}
+.menu > div > .menu-item:hover {
+  color: #F0F0F0;
+}
+
+#editor-main {
+  width: 100%;
+  margin:auto auto;
+}
+
+button.big, textarea.big {
+  width:100%;
+}
+
+.options-false {
+  display:none;
+}
+
+#canvas {
+	width:100px;
+	height:100px;
+	overflow:hidden;
+}
+
+.video {
+	width:100px;
+}
+
+.analyser {
+	border: solid 1px gray;
 }

@@ -2,14 +2,20 @@ import React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 import { withRouter, Link } from 'react-router-dom';
 import TimeAgo from 'react-timeago'
+import {configure, gravatarHash} from './NoteUtil'
+import './NoteThumbnail.scss'
 
 class NoteThumbnail extends React.Component {
 
   render() {
 
+    let config = configure(this.props.note)
+
    return (
-  		<div onClick={this.props.selectNote}>
-        <Link to={"/notes/"+this.props.note.id}>{this.props.note.title? this.props.note.title:"Note by "+this.props.note.author.name} (<TimeAgo date={this.props.note.created_at} />)</Link>
+  		<div className="note-thumbnail" onClick={this.props.selectNote}>
+            <img className="avatar" src={"https://www.gravatar.com/avatar/"+gravatarHash(this.props.note.author.email)} />
+            <span className="name">{this.props.note.author.name}</span> (<span className="time"><TimeAgo date={this.props.note.created_at} /></span>)
+            <Link to={"/notes/"+this.props.note.id}><p>{config.meta.get("title")}</p></Link>
   		</div>
   		);
 	                                                                                                    }
@@ -24,9 +30,11 @@ const FragmentContainer =  createFragmentContainer(NoteThumbnail, graphql`
       id
       created_at
     title
+    body
     tags
       author{
         name
+        email
       }
     verse{
       id

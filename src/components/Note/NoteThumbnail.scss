@@ -1,0 +1,46 @@
+.note-thumbnail {
+  padding: 15px 0;
+  border-bottom: 1px solid #D2D2D2;
+}
+.note-thumbnail:last-child {
+  border: none;
+}
+.note-thumbnail span.name {
+  font-size: 18px;
+  color: #58B84E;
+}
+.note-thumbnail span.time {
+  font-size: 12px;
+  color: #CCC;
+}
+.note-thumbnail img.avatar {
+  margin: 0 19px 0 20px;
+  float: left;
+}
+.note-thumbnail p {
+  margin: 5px 50px 0 90px;
+  padding: 0;
+  text-align: justify;
+  line-height: 1.5;
+}
+.note-thumbnail p span.spacing {
+  padding-left: 9px;
+  margin-left: 9px;
+  height: 10px;
+  border-left: 1px solid #D2D2D2;
+}
+.note-thumbnail form {
+  padding: 0 23px;
+}
+.note-thumbnail h1 {
+  border-bottom: 1px solid #D2D2D2;
+  margin: 5px 0;
+  font-weight: normal;
+  font-size: 18px;
+  padding: 13px 23px;
+  height: 23px;
+}
+.note-thumbnail p {
+  padding: 0 24px;
+  margin: 18px 0;
+}

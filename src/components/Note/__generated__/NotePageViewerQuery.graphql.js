@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 347b7d5d668f06027daf03c31f48ce98
+ * @relayHash c79fe7dff1b9954ebc1da5171c76ce51
  */
 
 /* eslint-disable */
@@ -46,7 +46,7 @@ fragment Navbar_viewer on Viewer {
 
 fragment NoteViewer_viewer on Viewer {
   authenticated
-  ...SimpleBibleVerse_viewer
+  ...BibleWidget_viewer
 }
 
 fragment NoteViewer_note on Note {
@@ -59,7 +59,6 @@ fragment NoteViewer_note on Note {
     id
   }
   verse {
-    ...SimpleBibleVerse_verse
     id
     body
     reference
@@ -74,15 +73,23 @@ fragment NoteViewer_note on Note {
   }
 }
 
-fragment SimpleBibleVerse_verse on SimpleBibleVerse {
+fragment BibleWidget_viewer on Viewer {
+  ...BibleVerse_viewer
+  ...FocusedBibleVerse_viewer
   id
-  body
-  verseNumber
-  reference
 }
 
-fragment SimpleBibleVerse_viewer on Viewer {
+fragment BibleVerse_viewer on Viewer {
   id
+  authenticated
+}
+
+fragment FocusedBibleVerse_viewer on Viewer {
+  id
+  ...NoteThumbnail_viewer
+}
+
+fragment NoteThumbnail_viewer on Viewer {
   authenticated
 }
 */
@@ -342,13 +349,6 @@ const batch /*: ConcreteBatch*/ = {
                     "kind": "ScalarField",
                     "alias": null,
                     "args": null,
-                    "name": "verseNumber",
-                    "storageKey": null
-                  },
-                  {
-                    "kind": "ScalarField",
-                    "alias": null,
-                    "args": null,
                     "name": "reference",
                     "storageKey": null
                   },
@@ -364,6 +364,13 @@ const batch /*: ConcreteBatch*/ = {
                     "alias": null,
                     "args": null,
                     "name": "notesCount",
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "args": null,
+                    "name": "verseNumber",
                     "storageKey": null
                   },
                   {
@@ -409,7 +416,7 @@ const batch /*: ConcreteBatch*/ = {
       }
     ]
   },
-  "text": "query NotePageViewerQuery(\n  $token: String\n  $noteId: String!\n) {\n  viewer(token: $token) {\n    ...Navbar_viewer\n    ...NoteViewer_viewer\n    authenticated\n    note(id: $noteId) {\n      id\n      body\n      ...NoteViewer_note\n    }\n  }\n}\n\nfragment Navbar_viewer on Viewer {\n  authenticated\n  email\n  name\n}\n\nfragment NoteViewer_viewer on Viewer {\n  authenticated\n  ...SimpleBibleVerse_viewer\n}\n\nfragment NoteViewer_note on Note {\n  id\n  title\n  body\n  tags\n  author {\n    name\n    id\n  }\n  verse {\n    ...SimpleBibleVerse_verse\n    id\n    body\n    reference\n    url\n    notesCount\n    verseNumber\n    quote\n  }\n  output {\n    body\n    id\n  }\n}\n\nfragment SimpleBibleVerse_verse on SimpleBibleVerse {\n  id\n  body\n  verseNumber\n  reference\n}\n\nfragment SimpleBibleVerse_viewer on Viewer {\n  id\n  authenticated\n}\n"
+  "text": "query NotePageViewerQuery(\n  $token: String\n  $noteId: String!\n) {\n  viewer(token: $token) {\n    ...Navbar_viewer\n    ...NoteViewer_viewer\n    authenticated\n    note(id: $noteId) {\n      id\n      body\n      ...NoteViewer_note\n    }\n  }\n}\n\nfragment Navbar_viewer on Viewer {\n  authenticated\n  email\n  name\n}\n\nfragment NoteViewer_viewer on Viewer {\n  authenticated\n  ...BibleWidget_viewer\n}\n\nfragment NoteViewer_note on Note {\n  id\n  title\n  body\n  tags\n  author {\n    name\n    id\n  }\n  verse {\n    id\n    body\n    reference\n    url\n    notesCount\n    verseNumber\n    quote\n  }\n  output {\n    body\n    id\n  }\n}\n\nfragment BibleWidget_viewer on Viewer {\n  ...BibleVerse_viewer\n  ...FocusedBibleVerse_viewer\n  id\n}\n\nfragment BibleVerse_viewer on Viewer {\n  id\n  authenticated\n}\n\nfragment FocusedBibleVerse_viewer on Viewer {\n  id\n  ...NoteThumbnail_viewer\n}\n\nfragment NoteThumbnail_viewer on Viewer {\n  authenticated\n}\n"
 };
 
 module.exports = batch;

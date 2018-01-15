@@ -102,8 +102,10 @@ class Quiz extends React.Component {
       pass:false
     }
 
+      console.log(ans)
+
     if(attempts.length <= 0){
-      //
+      //jj
     }else if(attempts.indexOf(ans) < 0){
 
       let plural = ""
@@ -111,6 +113,7 @@ class Quiz extends React.Component {
 
       response.message = attempts.length + " wrong attempt"+plural
     }else{
+
       response.message = "Correctly answered in " + attempts.length + " attempts"
       response.pass = true
     }
@@ -162,8 +165,10 @@ class Quiz extends React.Component {
             reportError(data.options)
         }
 
-      }else if(l !== ""){
+      }else if(l !== "" && questionIndex !== null){
         data.questions[questionIndex].body += md.render(l)
+      }else if(l !== ""){
+        data.title += l
       }
       return null
     })

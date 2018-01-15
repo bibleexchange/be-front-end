@@ -21,8 +21,8 @@ const BibleDefaultViewerQuery = graphql`
       ...MyNotes_viewer
       authenticated
 
-       bibleChapter (id:$reference){
-          ...BibleWidget_bibleChapter
+       bibleVerses (id:$reference){
+          ...BibleWidget_verses
       }
 
       bibleVerse (id:$reference){
@@ -103,7 +103,7 @@ class BibleDefault extends Component {
                   <div className="row">
                       <BibleWidget 
                         viewer={props.viewer} 
-                        bibleChapter={props.viewer.bibleChapter} 
+                        verses={props.viewer.bibleVerses} 
                         bibleVerse={props.viewer.bibleVerse}
                         updateBibleReference={this.updateBibleReference.bind(this)} 
                         reference={this.state.reference}

@@ -1,11 +1,40 @@
 import React from 'react'
-import DocLine from './DocLine'
-import CreateNewLine from './CreateNewLine'
-import RenderLine from './RenderLine'
-
+import { withRouter, Link } from 'react-router-dom';
+import EditPage from './EditPage'
+import CreateNewPage from './CreateNewPage'
+import RenderPage from './RenderPage'
 import './Document.css'
 
+class Index extends React.Component {
+
+  componentWillMount(){
+
+    this.state = {
+      index: this.props.index
+    }
+  }
+
+    componentWillReceiveProps(newProps){
+
+    this.state = {
+      index: newProps.index
+    }
+  }
+
+  render(){
+    return <input type="text" value={this.state.index} onChange={this.handleNewIndex.bind(this)} data-name="index" data-index={this.props.index} data-action="page.update" onBlur={this.props.handleDocChange}/>
+  }
+
+    handleNewIndex(e){
+      let index = e.target.dataset.index
+      let newState = Object.assign({}, this.state)
+      newState.index = e.target.value
+      this.setState(newState)
+    }  
+}
+
 class Document extends React.Component {
+
   render(){
     return <div id="document">
               {this.renderViewForm()}
@@ -16,27 +45,26 @@ class Document extends React.Component {
   renderViewForm(){
 
     let numbers = "hide"
-    let markup =  "hide"
     let json = "none"
     let edit = "hide"
     let add = "hide"
     let meta = "none"
     let history = "none"
     let handleDocChange = this.props.handleDocChange
-    let lines = this.props.state.config.lines
+    let pages = this.props.state.config.pages
     let options = this.props.state.options
     let rawConfig = this.props.state.rawConfig
     let metaList = this.props.state.config.meta
     let historyList = this.props.state.config.history
-    let createNewLine = <CreateNewLine index={lines.length} line={this.props.state.newLine} handleChange={handleDocChange}/>
+    let createNewPage = <CreateNewPage index={pages.length} page={this.props.state.newPage} handleChange={handleDocChange}/>
+    let toggleEdit = this.props.handleToggleEdit
     let reportError = this.props.reportError
 
-    if(lines.length > 0){
-      createNewLine = null
+    if(pages.length > 0){
+      createNewPage = null
     }
 
     if(options.numbers){numbers = ""}
-    if(options.markup){markup = ""}
     if(options.json){json = ""}
     if(options.meta){meta = ""}
     if(options.history){history = ""}
@@ -45,7 +73,6 @@ class Document extends React.Component {
       edit = ""
       add = ""
       let editState = this.props.state.editState
-      let toggleEdit = this.props.handleToggleEdit
 
       return <div>
           <div style={{display:json}}>
@@ -56,7 +83,16 @@ class Document extends React.Component {
           <div style={{display:meta}}>
             <h2>info:</h2>
             {metaList.map(function(m, index){
-              if(m !== null){
+              if(m.key === "title"){
+                return <h1 key={index}>
+                  <input type="text" value={m.value} data-index={index} onChange={handleDocChange} data-name="value" data-action="meta.update" />
+                  </h1>
+
+              }else if(m.key === "scripture"){
+                return <blockquote key={index} className="bibleverse">
+                    <input type="text" value={m.value} data-index={index} onChange={handleDocChange} data-name="value" data-action="meta.update" />
+                    </blockquote>
+              }else if(m !== null){
                 return <p key={index}>
                         key: <input type="text" onChange={handleDocChange} value={m.key} data-index={index} data-name="key" data-action="meta.update"/> 
                         value: <input type="text" value={m.value} data-index={index} onChange={handleDocChange} data-name="value" data-action="meta.update" />
@@ -77,49 +113,52 @@ class Document extends React.Component {
             })}
            </div>
 
-         {lines.map(function(l, index){
-
+         {pages.map(function(p, index){
 
          return <div className="flexbox-container" key={index}>
-            <li className={edit} data-index={index} onClick={toggleEdit}>{editState[index] === true ? 'view' : 'edit' }</li>
-            <li className={add} data-index={index} data-action="line.create" onClick={handleDocChange}>+</li>
-            <li className={numbers}>{index}</li>
-            <li className={markup}>{l.markup}</li>
-            
-            <DocLine line={l} save={false} index={index} edit={editState[index]} handleChange={handleDocChange} reportError={reportError}/>
+            <EditPage page={p} index={index} handleChange={handleDocChange} reportError={reportError}/>
+            <nav id="page-nav">
+              <li className={numbers}>page: <Index index={index} handleDocChange={handleDocChange}/></li>
+              <button className={add} data-index={index} data-action="page.create" onClick={handleDocChange}>+ page</button>
+            </nav>
             </div>
           })}
 
           <hr/> 
-            {createNewLine}
+            {createNewPage}
+        </div>
+    } else if(options.context === "preview"){
+
+      let n = []
+
+      options.contextVals.map(function(o){
+        n.push(pages[o])
+      })
+      pages = n
+
+        return <div id="lines" >
+        {pages.map(function(page, index){
+          return <div className="flexbox-container" key={index}>
+            <li className={numbers}>{index}</li>
+            <RenderPage page={page} index={index} onClick={false} reportError={false}/>
+            </div>
+        })}
         </div>
     }else{
 
       return <div id="lines" >
-
-          <div style={{display:json}}>
-            <code>{rawConfig}</code>
-            <hr />
-          </div>
-
-          <div style={{display:meta}}>
-            <h2>info:</h2>
-            {metaList.map(function(m, index){
-              if(m !== null){return <p key={index}><strong>{m.key}:</strong> {m.value}</p>}else{return null}
-            })}
-            <hr />
-          </div>
-
-        {lines.map(function(line, index){
-          return <div className="flexbox-container" key={index}>
-            <li className={numbers}>{index}</li>
-            <li className={markup}>{line.markup}</li>
-            <RenderLine line={line} index={index} onClick={false} reportError={reportError}/>
-            </div>
+        {pages.map(function(page, index){
+          return <details className="flexbox-container" key={index} open>
+            <summary>page: {index+1}</summary>
+            <RenderPage page={page} index={index} onClick={false} reportError={false}/>
+            </details>
         })}
       </div>
     }
   }
+    handleUpdateNewIndex(e){
+      this.props.handleChange(e)
+    } 
 
 }
 

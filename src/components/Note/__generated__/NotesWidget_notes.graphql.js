@@ -9,7 +9,7 @@
 /*::
 import type {ConcreteFragment} from 'relay-runtime';
 export type NotesWidget_notes = {|
-  +resultsInfo: ?{|
+  +info: ?{|
     +totalCount: ?number;
     +perPage: ?number;
     +totalPagesCount: ?number;
@@ -41,8 +41,8 @@ const fragment /*: ConcreteFragment*/ = {
       "kind": "LinkedField",
       "alias": null,
       "args": null,
-      "concreteType": "PagesInfo",
-      "name": "resultsInfo",
+      "concreteType": "ResultInfo",
+      "name": "info",
       "plural": false,
       "selections": [
         {

@@ -8,7 +8,6 @@ import CreateNoteMutation from "../../mutations/CreateNoteMutation"
 import UpdateNoteMutation from "../../mutations/UpdateNoteMutation"
 import DeleteNoteMutation from "../../mutations/DeleteNoteMutation"
 import './MyNotes.scss'
-import './CourseEditor.css'
 
 import Editor from './Editor'
 
@@ -16,7 +15,10 @@ import Editor from './Editor'
 var MenuItem = React.createClass({
 
   render: function() {
-    return <button className="menu-item" onClick={this.props.handleEditThis} data-id={this.props.note.id}>{this.props.children}</button>;
+    return <div className="menu-item" >
+      <button onClick={this.props.handleEditThis} data-id={this.props.note.id}>{this.props.children}</button>
+      <button onClick={this.props.handleDelete} data-id={this.props.note.id}>X</button>
+      </div>;
   }
 });
 
@@ -47,7 +49,7 @@ componentWillMount(){
   this.state = {
     newNoteId: newNoteId,
     newNote: newNote,
-    notesStatus: false,
+    notesStatus: this.props.userNote === null,
     saved: true,
     distractionFree: false,
     newnoteTitle:"",
@@ -62,33 +64,25 @@ componentWillReceiptProps(newProps){
 }
 
   render () {
-let state = this.state
-let save = null
-let cancel = null
-let deletebutton = null
-let viewButton = null
-let createnoteButton = null
-let handleEditThis = this._handleEditNote.bind(this)
+    let state = this.state
+    let save = null
+    let cancel = null
+    let deletebutton = null
+    let viewButton = null
+    let createnoteButton = null
+    let handleEditThis = this._handleEditNote.bind(this)
+    let handleDelete = this._deleteNote.bind(this)
 
-if (this.state.saved === false){
-  save = <li><button onClick={this.saveNoteChanges.bind(this)}>save</button></li>
-  cancel = <li><button onClick={this._clearChanges.bind(this)}>clear changes</button></li>
-}
+    if (this.state.saved === false){
+      save = <li><button onClick={this.saveNoteChanges.bind(this)}>save</button></li>
+      cancel = <li><button onClick={this._clearChanges.bind(this)}>clear changes</button></li>
+    }
 
-if(this.state.newnoteTitle !== ""){
-  createnoteButton = <button onClick={this.createNote.bind(this)}>click to create new:  "{this.state.newnoteTitle}"</button>
-}
-
-if(this.state.newNote.id !== undefined){
-  deletebutton = <li><button onClick={this._deleteNote.bind(this)}>delete note</button></li>
-  viewButton = <li><Link to={"/notes/" + this.state.newNote.id}>view note</Link></li>
-}else{
-
-}
-
+    if(this.state.newnoteTitle !== ""){
+      createnoteButton = <button onClick={this.createNote.bind(this)}>click to create new:  "{this.state.newnoteTitle}"</button>
+    }
     return (
       <div id="my-notes" className={"distraction-free-"+this.state.distractionFree}>
-
         <nav>
           <li><button onClick={this._handleDistractionFree.bind(this)}>Distraction Free</button></li>
           <li><button onClick={this._handleMyNotes.bind(this)} >My Notes</button>
@@ -96,7 +90,7 @@ if(this.state.newNote.id !== undefined){
           <ul className={"my-notes-"+this.state.notesStatus}>
               <Menu ref="left" alignment="left" status={this.state.menu}>
               <form>
-                <input type="text" style={{width:"100%", lineHeight:"50px", textAlign:"center", fontSize:"1.5rem"}} value={this.state.newnoteTitle} onChange={this.updateNewnoteTitle.bind(this)}/>
+                <input type="text" id="search-title" value={this.state.newnoteTitle} onChange={this.updateNewnoteTitle.bind(this)}/>
                 {createnoteButton}
               </form>
 
@@ -108,7 +102,7 @@ if(this.state.newNote.id !== undefined){
                 }
                 return null
               }).map(function(c){
-                return <MenuItem key={c.node.id} note={c.node} handleEditThis={handleEditThis}>{c.node.title}</MenuItem>
+                return <MenuItem key={c.node.id} note={c.node} handleDelete={handleDelete} handleEditThis={handleEditThis}>{c.node.title}</MenuItem>
               })}
 
             </Menu> 
@@ -124,7 +118,7 @@ if(this.state.newNote.id !== undefined){
         </nav>
 
         <main>
-          <Editor viewer={this.props.viewer} note={this.props.userNote} />
+          <Editor viewer={this.props.viewer} note={this.props.userNote} handleDelete={handleDelete} />
         </main>
         
       </div>
@@ -190,7 +184,7 @@ if(this.state.newNote.id !== undefined){
  }
 
 _deleteNote = (e) => {
-    DeleteNoteMutation(this.state.newNote.id, this.props.viewer, this._deleteCallback)
+    DeleteNoteMutation(e.target.dataset.id, this.props.viewer, this._deleteCallback)
     this.setState({notesStatus: false, saved: true})
     
  }
@@ -200,8 +194,8 @@ _deleteNote = (e) => {
  }
 
 _deleteCallback = (response) => {
-    this.setState({newNote: this._cloneNote()})
-    this.props.saveCallback(response)
+    //this.setState({newNote: this._cloneNote()})
+    //this.props.saveCallback(response)
  }
 
 _cloneNote = (note = false) => {

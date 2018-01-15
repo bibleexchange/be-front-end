@@ -39,8 +39,8 @@ const HomeViewerQuery = graphql`
           }
         }
 
-      bibleChapter (id:$reference){
-          ...BibleWidget_bibleChapter
+      bibleVerses (id:$reference){
+          ...BibleWidget_verses
       }
 
       bibleVerse (id:$reference){
@@ -113,7 +113,7 @@ class Home extends Component {
                 
                 <BibleWidget 
                   viewer={props.viewer} 
-                  bibleChapter={props.viewer.bibleChapter} 
+                  verses={props.viewer.bibleVerses} 
                   bibleVerse={props.viewer.bibleVerse}
                   updateBibleReference={this.updateBibleReference.bind(this)} 
                   reference={this.state.reference}
