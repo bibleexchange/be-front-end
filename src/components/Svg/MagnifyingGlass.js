@@ -31,4 +31,4 @@ class MagnifyingGlass extends React.Component {
 
 }
 
-module.exports = MagnifyingGlass;
+export default MagnifyingGlass;

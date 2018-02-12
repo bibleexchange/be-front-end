@@ -3,11 +3,14 @@ import {
   graphql,
 } from 'react-relay'
 import environment from '../createRelayEnvironment'
-//import {ConnectionHandler} from 'relay-runtime'
 
 const mutation = graphql`
   mutation UpdateNoteMutation($input: UpdateNoteInput!) {
     updateNote(input: $input) {
+      error {
+        message
+        code
+      }
       note {
         id
         verse {
@@ -24,15 +27,15 @@ const mutation = graphql`
 
 let tempID = 0;
 
-export default function UpdateNoteMutation(note, viewer, callback) {
+export default function UpdateNoteMutation(note, token, callback) {
   const variables = {
     input: {
-      id: note.id,
-      title: note.title,
-      body:note.body,
-      reference: note.verse.reference,
-      tags_string: note.tags_string,
-      token:viewer.id,
+      id: note.id? note.id:undefined,
+      title: note.title? note.title:undefined,
+      body:note.body? note.body:undefined,
+      reference: note.verse? note.verse.reference: undefined,
+      tags_string: note.tags_string? note.tags_string:undefined,
+      token:token? token:undefined,
       clientMutationId: tempID
     },
   }

@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash f40fb3197a360fa3767e37cde4769acd
+ * @relayHash ebb231376c56a0d998cf4802ca840b1a
  */
 
 /* eslint-disable */
@@ -123,7 +123,7 @@ fragment FocusedBibleVerse_verse on BibleVerse {
 fragment CrossReference_reference on CrossReference {
   id
   reference
-  verses {
+  verses(first: 100) {
     edges {
       node {
         id
@@ -554,14 +554,14 @@ const batch /*: ConcreteBatch*/ = {
                 "kind": "ScalarField",
                 "alias": null,
                 "args": null,
-                "name": "chapterURL",
+                "name": "id",
                 "storageKey": null
               },
               {
                 "kind": "ScalarField",
                 "alias": null,
                 "args": null,
-                "name": "id",
+                "name": "reference",
                 "storageKey": null
               },
               {
@@ -589,7 +589,7 @@ const batch /*: ConcreteBatch*/ = {
                 "kind": "ScalarField",
                 "alias": null,
                 "args": null,
-                "name": "reference",
+                "name": "chapterURL",
                 "storageKey": null
               },
               {
@@ -640,7 +640,14 @@ const batch /*: ConcreteBatch*/ = {
                           {
                             "kind": "LinkedField",
                             "alias": null,
-                            "args": null,
+                            "args": [
+                              {
+                                "kind": "Literal",
+                                "name": "first",
+                                "value": 100,
+                                "type": "Int"
+                              }
+                            ],
                             "concreteType": "BibleVerse2Connection",
                             "name": "verses",
                             "plural": false,
@@ -689,7 +696,7 @@ const batch /*: ConcreteBatch*/ = {
                                 "storageKey": null
                               }
                             ],
-                            "storageKey": null
+                            "storageKey": "verses{\"first\":100}"
                           }
                         ],
                         "storageKey": null
@@ -968,7 +975,7 @@ const batch /*: ConcreteBatch*/ = {
       }
     ]
   },
-  "text": "query ScriptureViewerQuery(\n  $token: String\n  $reference: String\n  $crossReferencesPageSize: Int!\n  $notesPageSize: Int!\n) {\n  viewer(token: $token) {\n    ...BibleWidget_viewer\n    bibleVerses(id: $reference) {\n      ...BibleWidget_verses\n    }\n    bibleVerse(id: $reference) {\n      ...BibleWidget_bibleVerse\n      id\n    }\n  }\n}\n\nfragment BibleWidget_viewer on Viewer {\n  ...BibleVerse_viewer\n  ...FocusedBibleVerse_viewer\n  id\n}\n\nfragment BibleWidget_verses on BibleVerseConnection {\n  pageInfo {\n    hasNextPage\n    hasPreviousPage\n    startCursor\n    endCursor\n  }\n  info {\n    nextChapterURL\n    previousChapterURL\n  }\n  edges {\n    cursor\n    node {\n      ...BibleVerse_verse\n      id\n      body\n      reference\n      verseNumber\n      chapter {\n        id\n        order_by\n      }\n      book {\n        id\n        title\n      }\n    }\n  }\n}\n\nfragment BibleWidget_bibleVerse on BibleVerse {\n  ...FocusedBibleVerse_verse\n  previous {\n    reference\n    id\n  }\n  next {\n    reference\n    id\n  }\n}\n\nfragment FocusedBibleVerse_verse on BibleVerse {\n  id\n  reference\n  body\n  verseNumber\n  chapterNumber\n  chapterURL\n  crossReferences(first: $crossReferencesPageSize) {\n    edges {\n      node {\n        id\n        ...CrossReference_reference\n      }\n    }\n  }\n  book {\n    id\n    title\n  }\n  notes(first: $notesPageSize) {\n    pageInfo {\n      hasNextPage\n    }\n    edges {\n      node {\n        id\n        title\n        body\n        ...NoteThumbnail_note\n      }\n    }\n  }\n}\n\nfragment CrossReference_reference on CrossReference {\n  id\n  reference\n  verses {\n    edges {\n      node {\n        id\n        reference\n        body\n      }\n    }\n  }\n}\n\nfragment NoteThumbnail_note on Note {\n  id\n  created_at\n  title\n  body\n  tags\n  author {\n    name\n    email\n    id\n  }\n  verse {\n    id\n    body\n    reference\n    url\n    notesCount\n    verseNumber\n    quote\n  }\n}\n\nfragment BibleVerse_verse on BibleVerse {\n  id\n  body\n  verseNumber\n  reference\n}\n\nfragment BibleVerse_viewer on Viewer {\n  id\n  authenticated\n}\n\nfragment FocusedBibleVerse_viewer on Viewer {\n  id\n  ...NoteThumbnail_viewer\n}\n\nfragment NoteThumbnail_viewer on Viewer {\n  authenticated\n}\n"
+  "text": "query ScriptureViewerQuery(\n  $token: String\n  $reference: String\n  $crossReferencesPageSize: Int!\n  $notesPageSize: Int!\n) {\n  viewer(token: $token) {\n    ...BibleWidget_viewer\n    bibleVerses(id: $reference) {\n      ...BibleWidget_verses\n    }\n    bibleVerse(id: $reference) {\n      ...BibleWidget_bibleVerse\n      id\n    }\n  }\n}\n\nfragment BibleWidget_viewer on Viewer {\n  ...BibleVerse_viewer\n  ...FocusedBibleVerse_viewer\n  id\n}\n\nfragment BibleWidget_verses on BibleVerseConnection {\n  pageInfo {\n    hasNextPage\n    hasPreviousPage\n    startCursor\n    endCursor\n  }\n  info {\n    nextChapterURL\n    previousChapterURL\n  }\n  edges {\n    cursor\n    node {\n      ...BibleVerse_verse\n      id\n      body\n      reference\n      verseNumber\n      chapter {\n        id\n        order_by\n      }\n      book {\n        id\n        title\n      }\n    }\n  }\n}\n\nfragment BibleWidget_bibleVerse on BibleVerse {\n  ...FocusedBibleVerse_verse\n  previous {\n    reference\n    id\n  }\n  next {\n    reference\n    id\n  }\n}\n\nfragment FocusedBibleVerse_verse on BibleVerse {\n  id\n  reference\n  body\n  verseNumber\n  chapterNumber\n  chapterURL\n  crossReferences(first: $crossReferencesPageSize) {\n    edges {\n      node {\n        id\n        ...CrossReference_reference\n      }\n    }\n  }\n  book {\n    id\n    title\n  }\n  notes(first: $notesPageSize) {\n    pageInfo {\n      hasNextPage\n    }\n    edges {\n      node {\n        id\n        title\n        body\n        ...NoteThumbnail_note\n      }\n    }\n  }\n}\n\nfragment CrossReference_reference on CrossReference {\n  id\n  reference\n  verses(first: 100) {\n    edges {\n      node {\n        id\n        reference\n        body\n      }\n    }\n  }\n}\n\nfragment NoteThumbnail_note on Note {\n  id\n  created_at\n  title\n  body\n  tags\n  author {\n    name\n    email\n    id\n  }\n  verse {\n    id\n    body\n    reference\n    url\n    notesCount\n    verseNumber\n    quote\n  }\n}\n\nfragment BibleVerse_verse on BibleVerse {\n  id\n  body\n  verseNumber\n  reference\n}\n\nfragment BibleVerse_viewer on Viewer {\n  id\n  authenticated\n}\n\nfragment FocusedBibleVerse_viewer on Viewer {\n  id\n  ...NoteThumbnail_viewer\n}\n\nfragment NoteThumbnail_viewer on Viewer {\n  authenticated\n}\n"
 };
 
 module.exports = batch;

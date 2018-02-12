@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 8cb5c96e83670b4255c5290124b42cd7
+ * @relayHash 37277a698924d62e7d364af280bbb228
  */
 
 /* eslint-disable */
@@ -12,10 +12,10 @@ import type {ConcreteBatch} from 'relay-runtime';
 export type DeleteNoteMutationVariables = {|
   input: {
     id: string;
+    token: string;
     clientMutationId: string;
   };
 |};
-
 export type DeleteNoteMutationResponse = {|
   +deleteNote: ?{|
     +deletedId: ?string;

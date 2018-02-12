@@ -39,11 +39,11 @@ const mutation = graphql`
 
 let tempID = 0;
 
-function sharedUpdater(store, viewer, newEdge) {
-  const viewerProxy = store.get(viewer.id);
+function sharedUpdater(store, token, newEdge) {
+  const viewerProxy = store.get(token);
   const connection = ConnectionHandler.getConnection(
     viewerProxy,
-    'MyNotes_userNotes',
+    'MyNotesComponent_userNotes',
   );
 
   if (connection) {
@@ -52,14 +52,14 @@ function sharedUpdater(store, viewer, newEdge) {
 
 }
 
-export default function CreateNoteMutation(note, viewer, callback) {
+export default function CreateNoteMutation(note, token, success, error) {
   const variables = {
     input: {
-      title: note.title,
-      body:note.body,
-      reference: note.verse.reference,
-      tags_string: note.tags_string,
-      token:viewer.id,
+      title: note.title? note.title:undefined,
+      body:note.body? note.body:"",
+      reference: note.verse? note.verse.reference:undefined,
+      tags_string: note.tags_string? note.tags_string:undefined,
+      token:token,
       clientMutationId: ""     
     },
   }
@@ -70,10 +70,12 @@ export default function CreateNoteMutation(note, viewer, callback) {
       mutation,
       variables,
       onCompleted: (response) => {
-        console.log(response, environment)
-        callback(response)
+        success(response)
       },
-      onError: err => console.error(err),
+      onError: (err) => {
+        console.log("error", err)
+        error(err)
+      },
       
       optimisticResponse: {
         createNote: {
@@ -104,7 +106,7 @@ export default function CreateNoteMutation(note, viewer, callback) {
         );
 
         newEdge.setLinkedRecord(node, 'node');
-        sharedUpdater(store, viewer, newEdge);
+        sharedUpdater(store, token, newEdge);
         /*
         const userProxy = store.get(viewer.id);
        
@@ -117,7 +119,7 @@ export default function CreateNoteMutation(note, viewer, callback) {
       updater: (store) => {
         const payload = store.getRootField('createNote');
         const newEdge = payload.getLinkedRecord('noteEdge');
-        sharedUpdater(store, viewer, newEdge);
+        sharedUpdater(store, token, newEdge);
       },
     },
   )

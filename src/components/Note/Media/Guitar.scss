@@ -1,0 +1,79 @@
+nav {
+ 
+  .rewind {
+    margin-left: 28px;
+    height: 16px;
+    cursor: pointer;
+  }
+  .play {
+    margin-left: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+  .play-icon, 
+  .rewind-icon, 
+  .pause-icon {
+    &:hover path,
+    &:hover rect {
+      fill: #566574;
+    }
+  }
+  .pause-icon {
+    display: none;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.notes {
+  display: flex;
+  transition: opacity 1s ease;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  margin-top: 24px;
+  .note {
+    & > div {
+      height: 100%;
+      width: 32px;
+      border-radius: 16px;
+      background-color: #D8D8D8;
+      color: #541F5D;
+      font-family: 'Roboto', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 23px;
+      text-align: center;
+      box-sizing: border-box;
+      padding: 5px 0;
+      box-shadow: 0 7px 8px rgba(0, 0, 0, .16); 
+    }
+    &:hover div {
+      background-color: #FF6545;
+      color: #fff;
+    }
+    height: 132px;
+    &.key{
+      height: 172px;
+      & > div {
+        background-color: #ECDCCA; 
+      }    
+      &:hover > div {
+        background-color: #FF6545;
+        color: #fff;
+      }
+    }     
+    &:not(:first-child) > div {
+      margin-left: 8px;
+    }
+    &:not(:last-child) > div {
+      margin-right: 8px;
+    }
+    span {
+      font-size: 0.7em;
+    }
+  }
+}

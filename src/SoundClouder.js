@@ -5,15 +5,19 @@ class SoundCloud {
   init(){
     SC.initialize({
       client_id: '2dc887a365f4c737b309f890a7ea8584',
-      client_secret:'63e764894f156d7dcc9f5f10adc7703d',
-      redirect_uri: 'http://bible.exchange/soundcloud/callback.html'
+      client_secret:'63e764894f156d7dcc9f5f10adc7703d'
     });
+
+	return this
   }
 
-  test(){
-    SC.get('/user/183/tracks').then(function(tracks){
-      alert('Latest track: ' + tracks[0].title);
-    });
+  searchTags(tags){
+
+	SC.get('/tracks', {
+	  q: 'bible_exchange', tags: tags
+	}).then(function(tracks) {
+	  return tracks;
+	});
   }
 
 }

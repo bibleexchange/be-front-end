@@ -21,16 +21,16 @@ const fragment /*: ConcreteFragment*/ = {
   "name": "NotesWidget_viewer",
   "selections": [
     {
+      "kind": "FragmentSpread",
+      "name": "NoteThumbnail_viewer",
+      "args": null
+    },
+    {
       "kind": "ScalarField",
       "alias": null,
       "args": null,
       "name": "authenticated",
       "storageKey": null
-    },
-    {
-      "kind": "FragmentSpread",
-      "name": "NoteThumbnail_user",
-      "args": null
     }
   ],
   "type": "Viewer"

@@ -19,7 +19,7 @@ class FileBuffer {
       thisBuffer.context
         .decodeAudioData(audioData).then(function(decodedData) {
          thisBuffer.buffer[index] = decodedData;
-          if(index == thisBuffer.urls.length-1) {
+          if(index === thisBuffer.urls.length-1) {
             thisBuffer.loaded();
           }      
       });

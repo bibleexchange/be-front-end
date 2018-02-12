@@ -12,10 +12,10 @@ class NoteThumbnail extends React.Component {
     let config = configure(this.props.note)
 
    return (
-  		<div className="note-thumbnail" onClick={this.props.selectNote}>
+  		<div className="note-thumbnail" >
             <img className="avatar" src={"https://www.gravatar.com/avatar/"+gravatarHash(this.props.note.author.email)} />
             <span className="name">{this.props.note.author.name}</span> (<span className="time"><TimeAgo date={this.props.note.created_at} /></span>)
-            <Link to={"/notes/"+this.props.note.id}><p>{config.meta.get("title")}</p></Link>
+            <Link to={"/notes/"+this.props.note.id}><p>{config.get("title")}</p></Link>
   		</div>
   		);
 	                                                                                                    }

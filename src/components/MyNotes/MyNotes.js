@@ -1,146 +1,103 @@
-import React from 'react'
+import React, { Component } from 'react'
 import {
-  createFragmentContainer,
-  graphql
-} from 'react-relay';
-import { Link } from 'react-router-dom'
+  QueryRenderer,
+  graphql,
+  createFragmentContainer
+} from 'react-relay'
+import { withRouter, Link } from 'react-router-dom'
+import environment from '../../createRelayEnvironment'
+import Loader from '../App/Loader'
+import auth from '../../auth'
+import './MyNotes.scss'
+import MyNotesComponent from './MyNotesComponent'
 import CreateNoteMutation from "../../mutations/CreateNoteMutation"
 import UpdateNoteMutation from "../../mutations/UpdateNoteMutation"
 import DeleteNoteMutation from "../../mutations/DeleteNoteMutation"
-import './MyNotes.scss'
 
-import Editor from './Editor'
+class MyNotes extends Component {
 
+  componentWillMount(){
 
-var MenuItem = React.createClass({
+    let newNote = this._cloneNote()
 
-  render: function() {
-    return <div className="menu-item" >
-      <button onClick={this.props.handleEditThis} data-id={this.props.note.id}>{this.props.children}</button>
-      <button onClick={this.props.handleDelete} data-id={this.props.note.id}>X</button>
-      </div>;
-  }
-});
-
-var Menu = React.createClass({
-
-  render: function() {
-    return <div className="menu">
-      <div className={(this.props.status ? "visible " : "") + this.props.alignment}>{this.props.children}</div>
-    </div>;
-  }
-});
-
-class MyNotes extends React.Component {
-
-componentWillMount(){
-  let newNote = this._cloneNote()
-
-  let newNoteId = "newunsaved"
-
-  if(this.props.userNote !== null){
-    newNote = this._cloneNote(this.props.userNote)
-    //newNote.body = newNote.body.split("\n")
-    newNoteId = this.props.userNote.id
-  }else if(this.props.verse !== null){
-    newNote.verse = this.props.verse
+    this.state = {
+      newNote: newNote,
+      notesStatus: this.props.open,
+      saved: true,
+      distractionFree: false,
+      error: {code:200, message:null}
+    }
   }
 
-  this.state = {
-    newNoteId: newNoteId,
-    newNote: newNote,
-    notesStatus: this.props.userNote === null,
-    saved: true,
-    distractionFree: false,
-    newnoteTitle:"",
+  render() {
+    let props = this.props
+
+     return <MyNotesComponent 
+                error={this.state.error} 
+                viewer={props.viewer} 
+                note={props.userNote} 
+                verse={props.bibleVerse}
+                userNotes={props.userNotes} 
+                command={this.command.bind(this)} 
+                state={this.state}
+              />  
   }
-}
 
-componentWillReceiptProps(newProps){
-  if(newProps.userNote.id !== this.state.newNoteId){
-    this.setState({newNote: newProps.userNote})
-  }
+command(e){
+   // set data-action="model.action" || i.e., meta.delete
+   e.preventDefault()
 
-}
+    let target = e.target
 
-  render () {
-    let state = this.state
-    let save = null
-    let cancel = null
-    let deletebutton = null
-    let viewButton = null
-    let createnoteButton = null
-    let handleEditThis = this._handleEditNote.bind(this)
-    let handleDelete = this._deleteNote.bind(this)
+    let x = target.dataset.action.split(".")
+    let action = x[1]
+    let model = x[0]
 
-    if (this.state.saved === false){
-      save = <li><button onClick={this.saveNoteChanges.bind(this)}>save</button></li>
-      cancel = <li><button onClick={this._clearChanges.bind(this)}>clear changes</button></li>
+    console.log(action,model)
+
+    let actions = {
+      note : {
+        create : this.createNote.bind(this),
+        save: this.saveNoteChanges.bind(this),
+        reset: this.clearChanges.bind(this),
+        delete: this.deleteNote.bind(this),
+        update: this.editThis.bind(this)
+      },
+
+      newnote : {
+        update: this.updateNewNote.bind(this),
+      },
+
+      menu : {
+        edit: this.handleEditThis.bind(this),
+        full: this._handleDistractionFree.bind(this),
+        notes: this._handleMyNotes.bind(this)
+      },
+
+      verse: {
+        update: this.handleUpdateReference.bind(this),
+        delete: this.handleClearReference.bind(this),
+      }
+
     }
 
-    if(this.state.newnoteTitle !== ""){
-      createnoteButton = <button onClick={this.createNote.bind(this)}>click to create new:  "{this.state.newnoteTitle}"</button>
-    }
-    return (
-      <div id="my-notes" className={"distraction-free-"+this.state.distractionFree}>
-        <nav>
-          <li><button onClick={this._handleDistractionFree.bind(this)}>Distraction Free</button></li>
-          <li><button onClick={this._handleMyNotes.bind(this)} >My Notes</button>
+    let state = Object.assign({},this.state)
+    let newState = actions[model][action](target, state)
 
-          <ul className={"my-notes-"+this.state.notesStatus}>
-              <Menu ref="left" alignment="left" status={this.state.menu}>
-              <form>
-                <input type="text" id="search-title" value={this.state.newnoteTitle} onChange={this.updateNewnoteTitle.bind(this)}/>
-                {createnoteButton}
-              </form>
+    this.setState(newState)
+}
 
-              {this.props.userNotes.edges.filter(function(item){
-                if(item.node !== undefined){
-                  if(item.node.title !== null){
-                    return item.node.title.toLowerCase().search(state.newnoteTitle.toLowerCase()) !== -1;
-                  }                  
-                }
-                return null
-              }).map(function(c){
-                return <MenuItem key={c.node.id} note={c.node} handleDelete={handleDelete} handleEditThis={handleEditThis}>{c.node.title}</MenuItem>
-              })}
-
-            </Menu> 
-
-          </ul>
-          </li>
-          <li>{this.state.notesStatus}</li>
-          {save}
-          {cancel}
-          {deletebutton}
-          {viewButton}
-
-        </nav>
-
-        <main>
-          <Editor viewer={this.props.viewer} note={this.props.userNote} handleDelete={handleDelete} />
-        </main>
-        
-      </div>
-    )
-  }
-
- _handleEditNote = (e) => {
-  this.props.selectNote(e.target.dataset.id)
+ handleEditThis(target, state){
+  state.saved = true
+  state.notesStatus = false
+  this.props.selectNote(target.dataset.id)
+  return state
  }
 
-  _createNewLine = (e) => {
-        let index = +e.target.dataset.id+1
+ editThis(target, state){
 
-        let n = this.state.newNote
-        n.splice(index, 0, "");
-        this.setState({newNote: n})
-  }
-
- _editThis = (e) => {
-
-  let prop = e.target.id
-  let value = e.target.value
+  let prop = target.id
+  let value = target.value
   let note = this._cloneNote(this.state.newNote)
 
     switch(prop){
@@ -164,38 +121,41 @@ componentWillReceiptProps(newProps){
 
  }
 
- _handleMyNotes = (e) => {
-    this.setState({notesStatus: this.state.notesStatus? false:true})
+ _handleMyNotes (target, state) {
+    state.notesStatus  = !state.notesStatus
+    return state
  }
 
- _handleDistractionFree= (e) => {
-    this.setState({distractionFree: this.state.distractionFree? false:true})
+ _handleDistractionFree(target, state){
+    state.distractionFree  = !state.distractionFree
+    return state
  }
 
-  saveNoteChanges = (e) => {
+  saveNoteChanges(target, state){
     
     if(this.state.newNote.id === null || this.state.newNote.id === undefined){
-      CreateNoteMutation(this.state.newNote, this.props.viewer, this._saveCallback)
+      CreateNoteMutation(this.state.newNote, auth.getToken(), this._saveCallback)
     }else{
-      UpdateNoteMutation(this.state.newNote, this.props.viewer, this._saveCallback)
+      UpdateNoteMutation(this.state.newNote, auth.getToken(), this._saveCallback)
     }
-    this.setState({notesStatus: false, saved: true})
-    
+    state.notesStatus = false
+    return state
  }
 
-_deleteNote = (e) => {
-    DeleteNoteMutation(e.target.dataset.id, this.props.viewer, this._deleteCallback)
-    this.setState({notesStatus: false, saved: true})
-    
+deleteNote(target, state){
+    DeleteNoteMutation(target.dataset.id, auth.getToken(), this._deleteCallback)
+    state.notesStatus = true
+    return state
  }
 
  _saveCallback = (response) => {
-  this.props.saveCallback(response)
+    console.log("#################################################3",response.updateNote.error.message)
+    //this.setState({error: response.updateNote.error.message})
  }
 
 _deleteCallback = (response) => {
     //this.setState({newNote: this._cloneNote()})
-    //this.props.saveCallback(response)
+    console.log("deleted response", response)
  }
 
 _cloneNote = (note = false) => {
@@ -204,7 +164,7 @@ _cloneNote = (note = false) => {
 
     let verse = {id:"",reference:""}
 
-    if(this.props.verse !== null){
+    if(this.props.verse !== null && this.props.verse !== undefined){
       verse = this.props.verse
     }
 
@@ -227,94 +187,96 @@ _cloneNote = (note = false) => {
   }
 }
 
-  _clearChanges  = () => {
-
-      if(this.props.userNote !== null){
-        this.setState({newNote: this._cloneNote(this.props.userNote), save: true})
-      }else {
-        let newNote = this._cloneNote()
-          
-        if(this.props.verse !== null){
-          newNote.verse = this.props.verse
-        }
-
-        this.setState({newNote:  newNote, saved: true})
-      }
-    
-
+  clearChanges(target, state){
+      state.newNote =  this._cloneNote()
+      state.saved = true
+      return state
   }
 
-  updateNewnoteTitle(e){
-    this.setState({newnoteTitle: e.target.value})
-  }
+  updateNewNote(target, state){
+    let prop = target.dataset.name
 
-  createNote(e){
-    e.preventDefault()
-    
-    let note = {
-      title: this.state.newnoteTitle,
-      body:"",
-      verse: {
-        reference: this.props.verse? this.props.verse.reference:"Genesis 1:1"
-      },
-      
-      tags_string: ""
+    if(prop === "reference"){
+      state.newNote.verse.reference = target.value
+    }else{
+      state.newNote[target.dataset.name] = target.value
     }
-
-    CreateNoteMutation(note, this.props.viewer,  this.newNoteCallback.bind(this) )
+    
+    return state
   }
 
-  newNoteCallback(response){
-    console.log("new note created",response)
+  createNote(target, state){
+    CreateNoteMutation(this.state.newNote, auth.getToken(),  this.newNoteCallback.bind(this), this.newNoteError.bind(this) )
+
+    return state
   }
 
+  newNoteCallback(resp){
+    console.log("new note created",resp)
+
+    if(resp.createNote.error.code >= 500){
+      this.setState({error: resp.createNote.error.message, saved: false})
+    }else{
+      this.setState({saved: true, error:null})
+    }
+    
+  }
+
+  newNoteError(error){
+    console.log("creation failed",error)
+
+    this.setState({saved: false})
+  }
+
+  handleUpdateReference(target, state){
+      state.reference = target.dataset.reference
+      return state
+  }
+
+    handleClearReference(target, state){
+      state.newNote.verse.reference = ""
+      state.reference = undefined
+      return state
+  }
 
 }
 
-const FragmentContainer =  createFragmentContainer(MyNotes, graphql`
-  fragment MyNotes_viewer on Viewer {
-    id
-    authenticated
-    ...Editor_viewer
-  }
+export default createFragmentContainer(MyNotes, graphql`
+    fragment MyNotes_viewer on Viewer {   
+      id
+      authenticated
+      ...MyNotesComponent_viewer
+     }
 
-  fragment MyNotes_userNotes on UserNoteConnection {
-    edges{
-      node {
+      fragment MyNotes_userNotes on UserNoteConnection{
+        edges {
+          node {
+            id
+          }
+        }
+        ...MyNotesComponent_userNotes
+      }
+
+       fragment MyNotes_userNote on UserNote {
+        ...MyNotesComponent_note
         id
         title
+        body
+        tags_string
         verse {
           id
           reference
         }
-        tags
         created_at
         updated_at
+
       }
-    }
-  }
 
-  fragment MyNotes_userNote on UserNote {
-    ...Editor_note
-    id
-    title
-    body
-    tags_string
-    verse {
-      id
-      reference
-    }
-    created_at
-    updated_at
-
-  }
-
-   fragment MyNotes_verse on BibleVerse {
-    id
-    reference
-    quote
-  }
+      fragment MyNotes_bibleVerse on BibleVerse {
+        ...MyNotesComponent_verse
+        id
+        reference
+        quote
+      }
 
 `)
-
-export default FragmentContainer

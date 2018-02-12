@@ -25,12 +25,12 @@ let error = null
 if(this.state.error !== null){
   error = <p style={{color:"red"}}>{this.state.error.code} : {this.state.error.message}</p>
 }
+
     return (
       <div id="login-signup" className={"ready-"+this.state.status}>            
         <div className="spinner" />
         <div className="main">
         {error}
-
         <h1>Login/Sign Up</h1>
         <form>
           <label>email: </label>

@@ -1,11 +1,10 @@
-/* eslint no-unreachable: "off" */
 import React from 'react'
-import SmartParagraph from './Objects/SmartParagraph'
+import SmartParagraph from '../Note/Media/SmartParagraph'
 
 class RenderPage extends React.Component {
 
   render(){
-    return <div onClick={this.props.onClick} data-index={this.props.index}>
+    return <div className="rendered-page" onClick={this.props.onClick} data-index={this.props.index}>
               <SmartParagraph {...this.props} />
             </div>
   }

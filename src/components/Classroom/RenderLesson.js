@@ -4,10 +4,10 @@ import {
   graphql
 } from 'react-relay'
 import { withRouter } from 'react-router-dom';
-var marked = require('marked');
 import ActivityReadThis from './ActivityReadThis'
 import ActivityReadThisReference from './ActivityReadThisReference'
 import ActivityQuizThis from './ActivityQuizThis'
+import md from '../../Markdown'
 
 class RenderLesson extends React.Component {
 
@@ -35,7 +35,7 @@ class RenderLesson extends React.Component {
 
    switch(ob.type){
     case "markdown":
-      return <div dangerouslySetInnerHTML={{__html: marked(ob.content) }} />
+      return <div dangerouslySetInnerHTML={{__html: md.render(ob.content) }} />
     case "quiz":
       return <ActivityQuizThis questions={ob.content.questions} title={ob.content.title} viewer={viewer}/>
     default:

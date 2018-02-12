@@ -24,6 +24,7 @@ export type NotesWidget_notes = {|
     +node: ?{|
       +id: string;
       +title: ?string;
+      +body: ?string;
       +tags: ?$ReadOnlyArray<?string>;
     |};
   |}>;
@@ -136,6 +137,13 @@ const fragment /*: ConcreteFragment*/ = {
               "alias": null,
               "args": null,
               "name": "title",
+              "storageKey": null
+            },
+            {
+              "kind": "ScalarField",
+              "alias": null,
+              "args": null,
+              "name": "body",
               "storageKey": null
             },
             {

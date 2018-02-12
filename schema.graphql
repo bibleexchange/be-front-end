@@ -434,12 +434,12 @@ type CrossReferenceEdge {
 
 input DeleteNoteInput {
   id: String!
+  token: String!
   clientMutationId: String!
 }
 
 type DeleteNotePayload {
   error: Error
-  code: String
   deletedId: String
   token: String!
   clientMutationId: String!

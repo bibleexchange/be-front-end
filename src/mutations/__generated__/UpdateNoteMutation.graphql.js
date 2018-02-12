@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 32dfc4b429383cb13607a5d467299019
+ * @relayHash 378490a79478012e0c45918f01b8d5bb
  */
 
 /* eslint-disable */
@@ -20,9 +20,12 @@ export type UpdateNoteMutationVariables = {|
     clientMutationId: string;
   };
 |};
-
 export type UpdateNoteMutationResponse = {|
   +updateNote: ?{|
+    +error: ?{|
+      +message: ?string;
+      +code: ?number;
+    |};
     +note: ?{|
       +id: string;
       +verse: ?{|
@@ -43,6 +46,10 @@ mutation UpdateNoteMutation(
   $input: UpdateNoteInput!
 ) {
   updateNote(input: $input) {
+    error {
+      message
+      code
+    }
     note {
       id
       verse {
@@ -86,6 +93,31 @@ const batch /*: ConcreteBatch*/ = {
         "name": "updateNote",
         "plural": false,
         "selections": [
+          {
+            "kind": "LinkedField",
+            "alias": null,
+            "args": null,
+            "concreteType": "Error",
+            "name": "error",
+            "plural": false,
+            "selections": [
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "args": null,
+                "name": "message",
+                "storageKey": null
+              },
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "args": null,
+                "name": "code",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
           {
             "kind": "LinkedField",
             "alias": null,
@@ -192,6 +224,31 @@ const batch /*: ConcreteBatch*/ = {
             "kind": "LinkedField",
             "alias": null,
             "args": null,
+            "concreteType": "Error",
+            "name": "error",
+            "plural": false,
+            "selections": [
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "args": null,
+                "name": "message",
+                "storageKey": null
+              },
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "args": null,
+                "name": "code",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
+          {
+            "kind": "LinkedField",
+            "alias": null,
+            "args": null,
             "concreteType": "Note",
             "name": "note",
             "plural": false,
@@ -257,7 +314,7 @@ const batch /*: ConcreteBatch*/ = {
       }
     ]
   },
-  "text": "mutation UpdateNoteMutation(\n  $input: UpdateNoteInput!\n) {\n  updateNote(input: $input) {\n    note {\n      id\n      verse {\n        id\n        reference\n      }\n      title\n      body\n      tags_string\n    }\n  }\n}\n"
+  "text": "mutation UpdateNoteMutation(\n  $input: UpdateNoteInput!\n) {\n  updateNote(input: $input) {\n    error {\n      message\n      code\n    }\n    note {\n      id\n      verse {\n        id\n        reference\n      }\n      title\n      body\n      tags_string\n    }\n  }\n}\n"
 };
 
 module.exports = batch;

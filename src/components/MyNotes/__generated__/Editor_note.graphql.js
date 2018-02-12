@@ -12,6 +12,10 @@ export type Editor_note = {|
   +id: string;
   +title: ?string;
   +body: ?string;
+  +verse: ?{|
+    +id: string;
+    +reference: ?string;
+  |};
 |};
 */
 
@@ -41,6 +45,31 @@ const fragment /*: ConcreteFragment*/ = {
       "alias": null,
       "args": null,
       "name": "body",
+      "storageKey": null
+    },
+    {
+      "kind": "LinkedField",
+      "alias": null,
+      "args": null,
+      "concreteType": "SimpleBibleVerse",
+      "name": "verse",
+      "plural": false,
+      "selections": [
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "args": null,
+          "name": "id",
+          "storageKey": null
+        },
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "args": null,
+          "name": "reference",
+          "storageKey": null
+        }
+      ],
       "storageKey": null
     }
   ],

@@ -37,7 +37,7 @@ const fragment /*: ConcreteFragment*/ = {
     },
     {
       "kind": "FragmentSpread",
-      "name": "Editor_viewer",
+      "name": "MyNotesComponent_viewer",
       "args": null
     }
   ],

@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 7e8ad9e3fa8e571e93a9b81159b466df
+ * @relayHash 14512260accfd5a58f350fe19551b945
  */
 
 /* eslint-disable */
@@ -20,7 +20,6 @@ export type CreateNoteMutationVariables = {|
     clientMutationId: string;
   };
 |};
-
 export type CreateNoteMutationResponse = {|
   +createNote: ?{|
     +noteEdge: ?{|

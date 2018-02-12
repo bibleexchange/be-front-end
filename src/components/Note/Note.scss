@@ -10,7 +10,12 @@
     linear-gradient(180deg, white 6rem, #F0A4A4 calc(6rem), #F0A4A4 calc(6rem + 2px), transparent 1px),
     repeating-linear-gradient(0deg, transparent, transparent 1.5rem, #DDD 1px, #DDD calc(1.5rem + 1px));
   box-shadow: 1px 1px 3px rgba(0,0,0,.45);
-  padding:0;
+  padding:15px;
+
+  .media {
+  border:none;
+  word-break: break-word;
+  }
 
   main {
     flex: 3;

@@ -6,13 +6,14 @@ import {
 } from 'react-relay/compat';
 import BibleWidget from '../Bible/BibleWidget'
 import Document from '../MyNotes/Document'
-import {configure, get} from './NoteUtil'
+import {translateNote, get} from './NoteUtil'
 import './Note.scss'
 
 class NoteViewer extends React.Component {
 
 componentWillMount() {
-     let config = configure(this.props.note)
+
+    let config = translateNote(this.props.note, this.props.lang)
 
     this.state ={
       options:{
@@ -34,13 +35,16 @@ componentWillMount() {
   componentWillReceiveProps(newProps){
     if(this.props.note !== undefined && this.props.note !== null && this.props.note.config !== null && JSON.stringify(newProps.viewer.note.config) !== JSON.stringify(this.state.oldConfig)){
       let newState = this.state
-      newState.config = configure(newProps.note)
+      newState.config = translateNote(newProps.note)
       this.setState(newState)
     }
   }
 
   render() {
     let next = null
+    let back = null
+    let allPagesIfMoreThanOne = null
+
     let component = <h1>This note does not exist. Try <Link to={"/notes"}>searching</Link> for something else.</h1>;
     if (this.props.note !== null && this.props.note !== undefined && this.props.note !== '') {
       component = this.noteRender()
@@ -50,15 +54,30 @@ componentWillMount() {
       next = <button onClick={this.nextPage.bind(this)}>next</button>
     }
 
+    if(this.state.config.note.pages.length > 1){
+      allPagesIfMoreThanOne = <nav>
+            {this.state.config.note.pages.map(function(p,i){
+              return <button key={i} onClick={goToPage} data-id={i}>{i+1}</button>
+            })}
+          </nav>
+    }
+
+    if(this.hasPreviousPage()){
+      back = <button onClick={this.previousPage.bind(this)}>back</button>
+    }
+
+    let goToPage = this.goToPage.bind(this)
+
     return (
           <div>
 
           <nav>
+            {back}
             {next}
           </nav>
 
           <div id="note">
-            <h1>{this.state.config.meta.get("title")}</h1>                        
+            <h1>{this.state.config.getMeta("title")}</h1>                        
           
             {component}
 
@@ -79,21 +98,24 @@ componentWillMount() {
             <details>
             <summary>info:</summary>
 
-            {this.state.config.meta.map(function(m, index){
+            {this.state.config.note.meta.map(function(m, index){
               if(m === null){
                 return null
               }else if(m.key === "scripture"){
                 return <p key={index}><strong>{m.key}:</strong> <Link to={"/bible/"+m.value}>{m.value}</Link></p>
               }else if(Array.isArray(m.value)){
-                return <p key={index}><strong>{m.key}:</strong> #{m.value.join(" #")}</p>
+                return <p key={index} style={{wordWrap: "break-word", wordBreak: "break-all"}}><strong>{m.key}:</strong> #{m.value.join(" #")}</p>
               }else{  
-                return <p key={index}><strong>{m.key}:</strong> {m.value}</p>
+                return <p key={index}><strong>{m.key}:</strong> <span style={{wordWrap: "break-word", wordBreak: "break-all"}}>{m.value}</span></p>
               }
             })}
             
         </details>
 
           </div>
+
+          {allPagesIfMoreThanOne}
+
           </div>
     );
   }
@@ -110,24 +132,45 @@ componentWillMount() {
 
   nextPage(){
     let newState = Object.assign({},this.state)
-    newState.currentPage += 1
-    newState.options.contextVals = [newState.currentPage]
+    newState.options.currentPage += 1
+    newState.options.contextVals = [newState.options.currentPage]
+    this.setState(newState)
+  }
+
+  previousPage(){
+    let newState = Object.assign({},this.state)
+    newState.options.currentPage -= 1
+    newState.options.contextVals = [newState.options.currentPage]
     this.setState(newState)
   }
 
   hasNextPage(){
-    if(this.state.config.pages.length > this.state.currentPage){
+
+    if(this.state.config.note.pages.length-1 > this.state.options.currentPage){
       return true
     }else{
       return false
     }
   }
 
-}
 
-NoteViewer.propTypes = {
-  note: React.PropTypes.object.isRequired,
-};
+  hasPreviousPage(){
+
+    if(this.state.options.currentPage >= 1){
+      return true
+    }else{
+      return false
+    }
+  }
+
+  goToPage(e){
+    let newState = Object.assign({},this.state)
+    newState.options.currentPage = e.target.dataset.id
+    newState.options.contextVals = [newState.options.currentPage]
+    this.setState(newState)
+  }
+
+}
 
 const FragmentContainer =  createFragmentContainer(NoteViewer, graphql`
   fragment NoteViewer_viewer on Viewer @relay(mask: true) {

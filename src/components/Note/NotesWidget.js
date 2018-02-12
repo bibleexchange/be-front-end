@@ -1,128 +1,91 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   createFragmentContainer,
-  graphql,
-} from 'react-relay/compat';
-import { Link } from 'react-router-dom';
-import Loading from '../ListWidget/Loading'
+  graphql
+} from 'react-relay';
+import { Link, withRouter } from 'react-router-dom';
+import Loader from '../App/Loader'
 import './NotesWidget.scss';
-import SearchBox from '../ListWidget/SearchBox'
-import './NoteThumbnail';
+import NoteThumbnail from './NoteThumbnail';
+import environment from '../../createRelayEnvironment'
+import auth from '../../auth'
+import ReactDOM from 'react-dom'
 
-class NotesWidget extends React.Component {
+class NW extends Component {
 
-  componentWillMount (){
-    this.state = {
-      loading: true
-    }
+  render() {
+      let loading = null
+      let moreButton = null
+      if(this.props.loading && this.props.max > this.props.notes.length){
+        loading = <Loader />
+      }
+
+      if(this.props.notes.length  > 0 && this.props.notes.length < this.props.max){
+        moreButton = <button className="be-button" style={{width:"100%"}} onClick={this.props.handleNextPage}>more ({this.props.notes.length} of {this.props.max})</button>      
+      }
+
+      let props = this.props
+      
+    return (
+              <div id='notes-widget' ref="noteswidget">
+                {props.notes.map(({node}) =>
+                  <NoteThumbnail key={node.id} note={node} viewer={props.viewer} handleSelect={false}/>
+                )}
+                {loading}
+                {moreButton} 
+              </div>
+    )
   }
 
-  componentDidMount(){
-    this.setState ({loading: false})
+}
+
+class NotesWidget extends Component {
+
+  componentWillMount(){
+    this.state = {
+      loading: false
+    }
   }
 
   componentWillReceiveProps(newProps){
+      let s = this.state
+      s.loading = false
+      this.setState(s)
 
-    if(newProps.notes !== this.props.notes){
-          let s = this.state
-    s.loading = false
-
-    this.setState(s)
-    }
-
+      window.scrollTop = 1000;
   }
 
   render() {
 
       let notes = [];
-      let totalCount = 0
-      let user = this.props.user
+      let max = 0
+      let props = this.props
 
-      if (this.props.notes !== undefined && this.props.notes !== null){
-          totalCount = this.props.notes.totalCount
-          notes = this.props.notes.edges? this.props.notes.edges:[]
+      if (props.notes !== undefined && props.notes !== null){
+          notes = props.notes.edges? props.notes.edges:[]
+          max = props.notes.info.totalCount
       }
 
-    let details = {
-      title:{
-        singular: "Note",
-        plural: "Notes"
-      },
-      totalCount: totalCount,
-      filter: this.props.status.filter,
-        noResultsMessage: "No notes match your search!",
-        currentPage: this.props.status.notesCurrentPage
-    }
-
-    let selectNote = this.props.selectNote
-
-    return (
-    		<div id='notes-widget' className={"loading-"+this.state.loading}>
-
-            <SearchBox
-              items={this.props.notes}
-              details = {details}
-              status={this.props.status.status}
-              handleClearFilter={this.clear}
-              handleUpdateFilter={this.handleUpdateNoteFilter.bind(this)}
-              handleNextPage={this.handleNextPage.bind(this)}
-            />
-
-          {notes.map((n) => {
-            return <NoteThumbnail key={n.node.id} note={n.node} selectNote={selectNote} />
-          })}
-
-    		</div>
-    );
-  }onClick={selectNote} 
-
-  handleNextPage(e){
-    let s = this.state
-    s.loading = true
-
-    this.setState(s)
-
-    setTimeout(function() { this.props.handleNextNotePage(e); }.bind(this), 1);
-    
+    return <NW loading={this.state.loading} viewer={props.viewer} max={max} notes={notes} handleNextPage={this.handleNextPage.bind(this)}/>
   }
 
-  handleUpdateNoteFilter(e){
-    let s = this.state
+ handleNextPage(e){
+    let s = Object.assign({},this.state)
     s.loading = true
-
     this.setState(s)
-
-    setTimeout(function() { this.props.handleUpdateNoteFilter(e); }.bind(this), 1);
-    
-  }
-
-  clear(e){
-    let s = this.state
-    s.loading = true
-
-    this.setState(s)
-
-    //setTimeout(function() { this.props.handleClearNoteFilter(e); }.bind(this), 1);
-    
+    this.props.moreNotes(e)
   }
 
 }
 
-NotesWidget.propTypes = {
-  notes: React.PropTypes.object.isRequired,
-  status: React.PropTypes.object.isRequired,
-    handleUpdateNoteFilter:  React.PropTypes.func.isRequired,
-};
-
-const FragmentContainer =  createFragmentContainer(NotesWidget, graphql`
+export default createFragmentContainer(NotesWidget, graphql`
   fragment NotesWidget_viewer on Viewer {
+    ...NoteThumbnail_viewer
     authenticated
-    ...NoteThumbnail_user
-
   }
 
-  fragment NotesWidget_notes on NoteConnection {
-       info {
+ fragment NotesWidget_notes on NoteConnection {
+         info {
          totalCount
          perPage
          totalPagesCount
@@ -137,12 +100,11 @@ const FragmentContainer =  createFragmentContainer(NotesWidget, graphql`
            node {
              id
              title
+             body
              tags
              ...NoteThumbnail_note
            }
          }
-  }
+      }
 
 `)
-
-export default withRouter(FragmentContainer);

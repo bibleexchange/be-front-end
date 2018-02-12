@@ -44,7 +44,7 @@ class Oscillator {
 
   draw(){
 
-    let drawVisual = requestAnimationFrame(self.draw);
+    let drawVisual = requestAnimationFrame(this.draw.bind(this));
     let analyser = this.analyser
     let dataArray = this.dataArray
     let bufferLength = this.bufferLength

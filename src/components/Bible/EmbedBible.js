@@ -10,32 +10,13 @@ import auth from '../../auth'
 import './Bible.scss'
 
 const EmbedBibleViewerQuery = graphql`
-  query EmbedBibleViewerQuery ($token: String, $reference: String, $notesPageSize: Int!, $myNotesPageSize: Int!, $myNoteID: String, $crossReferencesPageSize: Int!) {
+  query EmbedBibleViewerQuery ($token: String, $reference: String) {
     viewer (token: $token){
       ...BibleWidget_viewer
-      ...MyNotes_viewer
       authenticated
 
        bibleVerses (id:$reference){
           ...BibleWidget_verses
-      }
-
-      bibleVerse (id:$reference){
-          ...BibleWidget_bibleVerse
-          ...MyNotes_verse
-      }
-
-      userNotes(first:$myNotesPageSize) @connection(key: "MyNotes_userNotes") {
-        edges {
-          node {
-            id
-          }
-        }
-        ...MyNotes_userNotes
-      }
-
-      userNote(id:$myNoteID){
-        ...MyNotes_userNote
       }
 
     }
@@ -46,12 +27,8 @@ class EmbedBible extends Component {
 
   componentWillMount(){
     this.state = {
-      crossReferencesPageSize: 0,
       environment: environment,
       reference: this.cleanReference(this.props.match.params.reference),
-      notesPageSize: 0,
-      myNoteID: "",
-      myNotesPageSize: 0,
       options : {simple:true, baseURL:"/embed/bible/"}
     }
   }
@@ -72,10 +49,7 @@ class EmbedBible extends Component {
           query={EmbedBibleViewerQuery}
           variables={{
             reference: this.state.reference,
-            token: auth.getToken(),
-            crossReferencesPageSize: this.state.crossReferencesPageSize,
-            notesPageSize: this.state.notesPageSize,
-            myNotesPageSize: this.state.myNotesPageSize
+            token: auth.getToken()
           }}
           render={({error, props}) => {
             if (error) {

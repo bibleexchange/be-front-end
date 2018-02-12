@@ -1,36 +1,36 @@
-const {
-  Environment,
-  Network,
-  RecordSource,
-  Store,
-} = require("relay-runtime");
-
-import auth from "./auth";
-
-function fetchQuery(operation,variables){
-    return fetch(process.env.API_ENDPOINT? process.env.API_ENDPOINT:"http://bible.exchange/graphql", {
-        method: "POST",
-        headers: {
-            "Authorization": "Bearer " + auth.getToken(),
-            "Accept": "*/*",
-            "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-            query: operation.text,
-            variables,
-        }),
-    }).then(response => {
-        return response.json();
-    });
+import { Environment, Network, RecordSource, Store } from 'relay-runtime';
+import auth from './auth'
+// Define a function that fetches the results of an operation (query/mutation/etc)
+// and returns the result as a Promise:
+function fetchQuery(
+  operation,
+  variables,
+  // cacheConfig,
+  // uploadables,
+) {
+  return fetch(
+    process.env.API_ENDPOINT
+      ? `${process.env.API_ENDPOINT}`
+      : 'http://bible.exchange/graphql',
+    {
+      method: 'POST',
+      headers: {
+        // Add authentication and other headers here
+        'content-type': 'application/json',
+        "Authorization": "Bearer " + auth.getToken(),
+        "Accept": "*",
+        "Content-Type": "application/json",
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        query: operation.text,
+        variables,
+      }),
+    },
+  ).then(response => response.json());
 }
 
-const network = Network.create(fetchQuery);
-
-const source = new RecordSource();
-const store = new Store(source);
-
 export default new Environment({
-    network,
-    store,
+  network: Network.create(fetchQuery),
+  store: new Store(new RecordSource()),
 });

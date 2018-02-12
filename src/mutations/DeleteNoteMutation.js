@@ -13,11 +13,12 @@ const mutation = graphql`
   }
 `;
 
-export default function DeleteNoteMutation(noteId, viewer, callback) {
+export default function DeleteNoteMutation(noteId, token, callback) {
   const variables = {
     input: {
       id: noteId,
-      clientMutationId: ""
+      clientMutationId: "",
+      token:token
     },
   }
   commitMutation(
@@ -32,8 +33,8 @@ export default function DeleteNoteMutation(noteId, viewer, callback) {
       updater: (proxyStore) => {
         const deletePostField = proxyStore.getRootField('deleteNote')
         const deletedId = deletePostField.getValue('deletedId')
-        const viewerProxy = proxyStore.get(viewer.id)
-        const connection = ConnectionHandler.getConnection(viewerProxy, 'MyNotes_userNotes')
+        const viewerProxy = proxyStore.get(token)
+        const connection = ConnectionHandler.getConnection(viewerProxy, 'MyNotesComponent_userNotes')
         console.log(ConnectionHandler)
         ConnectionHandler.deleteNode(connection, deletedId)
       }

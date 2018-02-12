@@ -1,0 +1,70 @@
+$animation-time: 1s;
+
+@keyframes load {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+
+#loader {
+
+  position: relative;
+  display: block;
+  width: 100px;
+  height: 100px;
+
+  margin:auto auto;
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.box {
+  width: 45%;
+  display: block;
+  height: 45%;
+  background: rgba(black, 0.7);
+  opacity: 0;
+  filter: blur(0);
+  animation: load $animation-time linear infinite;
+
+  &:nth-of-type(1) {
+    position: absolute;
+    top: 2.5%;
+    left: 2.5%;
+  }
+  &:nth-of-type(2) {
+    position: absolute;
+    top: 2.5%;
+    right: 2.5%;
+    animation-delay: -($animation-time / 4 );
+  }
+  &:nth-of-type(3) {
+    position: absolute;
+    bottom: 2.5%;
+    right: 2.5%;
+    animation-delay: -($animation-time / 4 )*2;
+  }
+  &:nth-of-type(4) {
+    position: absolute;
+    bottom: 2.5%;
+    left: 2.5%;
+    animation-delay: -($animation-time / 4 )*3;
+  }
+}
+
+
+	}

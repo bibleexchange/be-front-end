@@ -31,7 +31,7 @@ const fragment /*: ConcreteFragment*/ = {
   "selections": [
     {
       "kind": "FragmentSpread",
-      "name": "Editor_note",
+      "name": "MyNotesComponent_note",
       "args": null
     },
     {

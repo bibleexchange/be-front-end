@@ -12,7 +12,7 @@ class BeLogo extends React.Component {
 
     return (
 
-			<svg version='1.1' className={'BeLogo' + extraClass} x='0' y='0' viewBox='0, 0, 291.6, 360'>
+			<svg version='1.1' className={'BeLogo' + extraClass} style={this.props.style} x='0' y='0' viewBox='0, 0, 291.6, 360'>
 			  <g id='bible'>
 			    <path d='M143.853,26.96 L13.858,49.882 L25.266,114.582' fillOpacity='0' stroke='#1FCC87' strokeWidth='9' />
 			    <path d='M141.415,13.134 L167.209,22.892 L146.291,40.787 z' fillOpacity='0' stroke='#1FCC87' strokeWidth='9' />
@@ -36,4 +36,4 @@ class BeLogo extends React.Component {
 
 }
 
-module.exports = BeLogo;
+export default BeLogo;

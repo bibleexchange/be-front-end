@@ -11,7 +11,7 @@ import './Home.scss'
 import LoginSignup from '../LoginSignup'
 
 const HomeViewerQuery = graphql`
-  query HomeViewerQuery ( $token: String!,$tracksPageSize: Int!, $coursesPageSize: Int!, $reference: String!, $notesPageSize: Int!, $crossReferencesPageSize: Int!){
+  query HomeViewerQuery ( $token: String!,$tracksPageSize: Int!, $coursesPageSize: Int!, $reference: String!, $crossReferencesPageSize: Int!){
     viewer (token: $token){
       ...CourseList_viewer
       ...Navbar_viewer
@@ -41,10 +41,6 @@ const HomeViewerQuery = graphql`
 
       bibleVerses (id:$reference){
           ...BibleWidget_verses
-      }
-
-      bibleVerse (id:$reference){
-          ...BibleWidget_bibleVerse
       }
 
   }

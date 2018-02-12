@@ -1,9 +1,8 @@
 import React from 'react'
 import { withRouter, Link } from 'react-router-dom';
-import EditPage from './EditPage'
-import CreateNewPage from './CreateNewPage'
+import EditMedia from './EditMedia'
 import RenderPage from './RenderPage'
-import './Document.css'
+import './Document.scss'
 
 class Index extends React.Component {
 
@@ -44,27 +43,30 @@ class Document extends React.Component {
 
   renderViewForm(){
 
-    let numbers = "hide"
     let json = "none"
     let edit = "hide"
     let add = "hide"
     let meta = "none"
     let history = "none"
     let handleDocChange = this.props.handleDocChange
-    let pages = this.props.state.config.pages
+    let pages = []
+    let metaList = []
+    let historyList = []
+    let config = this.props.state.config
+
+    if(this.props.state.config.note !== undefined){
+      pages = this.props.state.config.note.pages
+      metaList = this.props.state.config.note.meta
+      historyList = this.props.state.config.note.history
+    }
+
     let options = this.props.state.options
     let rawConfig = this.props.state.rawConfig
-    let metaList = this.props.state.config.meta
-    let historyList = this.props.state.config.history
-    let createNewPage = <CreateNewPage index={pages.length} page={this.props.state.newPage} handleChange={handleDocChange}/>
+    
+    
     let toggleEdit = this.props.handleToggleEdit
     let reportError = this.props.reportError
 
-    if(pages.length > 0){
-      createNewPage = null
-    }
-
-    if(options.numbers){numbers = ""}
     if(options.json){json = ""}
     if(options.meta){meta = ""}
     if(options.history){history = ""}
@@ -116,31 +118,41 @@ class Document extends React.Component {
          {pages.map(function(p, index){
 
          return <div className="flexbox-container" key={index}>
-            <EditPage page={p} index={index} handleChange={handleDocChange} reportError={reportError}/>
+            
+            {p.media.map(function(m,i){
+              if(m !== null){
+            	return <EditMedia page={p} key={i} media={m} pageIndex={index} index={i} handleChange={handleDocChange} reportError={reportError}/>
+            }
+            })}            
+
             <nav id="page-nav">
-              <li className={numbers}>page: <Index index={index} handleDocChange={handleDocChange}/></li>
+              <li>page: <Index index={index} handleDocChange={handleDocChange}/></li>
               <button className={add} data-index={index} data-action="page.create" onClick={handleDocChange}>+ page</button>
+               <button className={add} data-index={index} data-action="page.delete" onClick={handleDocChange}>delete</button>
             </nav>
             </div>
           })}
 
           <hr/> 
-            {createNewPage}
+
         </div>
     } else if(options.context === "preview"){
 
       let n = []
 
       options.contextVals.map(function(o){
-        n.push(pages[o])
+        if(pages[o] !== undefined){
+          n.push(pages[o])
+        }    
       })
+
       pages = n
 
         return <div id="lines" >
         {pages.map(function(page, index){
           return <div className="flexbox-container" key={index}>
-            <li className={numbers}>{index}</li>
-            <RenderPage page={page} index={index} onClick={false} reportError={false}/>
+            <li>{index}</li>
+            <RenderPage page={page} index={index} onClick={false} reportError={false} config={config}/>
             </div>
         })}
         </div>
@@ -150,7 +162,7 @@ class Document extends React.Component {
         {pages.map(function(page, index){
           return <details className="flexbox-container" key={index} open>
             <summary>page: {index+1}</summary>
-            <RenderPage page={page} index={index} onClick={false} reportError={false}/>
+            <RenderPage page={page} index={index} onClick={false} reportError={false} config={config}/>
             </details>
         })}
       </div>

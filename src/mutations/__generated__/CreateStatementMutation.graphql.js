@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 5f4ea0ad1670e2d1852c4151c3d916c9
+ * @relayHash f9550a48a8434eccc976917d77a4e4d5
  */
 
 /* eslint-disable */
@@ -18,7 +18,6 @@ export type CreateStatementMutationVariables = {|
     clientMutationId: string;
   };
 |};
-
 export type CreateStatementMutationResponse = {|
   +createStatement: ?{|
     +error: ?string;

@@ -13,11 +13,31 @@ import './BibleWidget.scss'
 
 class BibleWidget extends React.Component {
 
-  render () {
-    //console.log(this.props, 'Widget - render - environment', this.props.relay.environment)
+  componentWillMount(){
+    this.state = {
+      verses: this.props.verses? this.props.verses:{edges:[]}
+    } 
+  }
+  componentWillUpdate(newProps){
+    if(true/*newProps.verses !== null*/){
+      this.setState({verses: newProps.verses? this.props.verses:{edges:[]}})
+    }
+  }
 
-    let verses = []
-    let message = "no matching bible reference"
+  shouldComponentUpdate(newProps){
+    if(newProps.verses !== null || newProps.bibleVerse !== null){
+      return true
+    }else{
+      return false
+    }
+
+  }
+
+  render () {
+    console.log(this.props, 'Widget - render - environment', this.props.relay.environment)
+
+    let verses = this.state.verses.edges
+    let message = ""
     let verse = null
     let viewer = this.props.viewer
     let previousReference = null
@@ -36,43 +56,28 @@ class BibleWidget extends React.Component {
       baseURL = this.props.options.baseURL
      }
 
-    if(this.props.bibleVerse !== null){
-      verse = <FocusedBibleVerse verse={this.props.bibleVerse} simpleVerse={this.props.simpleVerse} baseURL={baseURL} viewer={this.props.viewer} moreNotes={this.props.moreNotes} simple={simple}/>
-      message = null
-
-      previousReference = this.props.bibleVerse.previous.reference
-      nextReference = this.props.bibleVerse.next.reference
-      previousURL = baseURL+ previousReference
-      nextURL = baseURL+ nextReference
-
-      onlyChapterViewBack = null
-      onlyChapterViewNext = null
-
-    }else if(this.props.simpleVerse !== undefined){
-      verse = <SimpleBibleVerse verse={this.props.simpleVerse} />
-      message = ""
-
-    }
-
-    if(this.props.verses !== null && this.props.verses !== undefined && this.props.verses.edges.length >= 2){
-      verses = this.props.verses.edges
+    if(this.state.verses !== null && this.state.verses !== undefined && this.state.verses.edges.length >= 2){
+      verses = this.state.verses.edges
       message = null
       verse = null
 
-        previousReference = this.props.verses.info.previousChapterURL
-        onlyChapterViewBack = <Link className="be-button-back" to={baseURL+previousReference}>previous</Link>
-        previousURL = baseURL+ previousReference
+        previousReference = this.state.verses.info.previousChapterURL
+        onlyChapterViewBack = <button style={{width:"48%", display:"inline-block", float:"left"}} className="be-button-back" data-reference={previousReference} onClick={this.updateReference.bind(this)}>{previousReference}</button>
 
-        nextReference = this.props.verses.info.nextChapterURL
-        onlyChapterViewNext = <Link className="be-button" to={baseURL+nextReference}>next</Link> 
-        nextURL = baseURL+ nextReference    
-        fullReference = false
-  
+        nextReference = this.state.verses.info.nextChapterURL
+        onlyChapterViewNext = <button style={{width:"48%", display:"inline-block", float:"right"}} className="be-button" data-reference={nextReference} onClick={this.updateReference.bind(this)}>{nextReference}</button>
+            
     }
 
-    if(simple){
-      return <div id="bible-widget">
+    if(simple && this.props.verses !== null){
+      let next = this.props.verses.info.nextChapterURL 
+      let previous = this.props.verses.info.previousChapterURL
+      onlyChapterViewBack = <button style={{width:"50%", display:"inline-block"}} className="be-button-back" data-reference={previous} onClick={this.updateBibleReference.bind(this)}>{previous}</button>
+      onlyChapterViewNext = <button style={{width:"50%", display:"inline-block"}} className="be-button" data-reference={next} onClick={this.props.updateBibleReference}>{next}</button>
 
+      return <div id="bible-widget">
+          {onlyChapterViewBack}
+          {onlyChapterViewNext}
           <h2>{this.props.reference}</h2>
           {message}
 
@@ -80,21 +85,11 @@ class BibleWidget extends React.Component {
             return <div key={v.node.id}><BibleVerse baseURL={baseURL} verse={v.node} viewer={viewer} fullReference={fullReference}/></div>
           })}
 
-          {verse}
-
-          {onlyChapterViewBack}
-          {onlyChapterViewNext}
         </div>
     }else{
 
       return (
         <div id="bible-widget">
-          <BibleNavigation
-           reference={this.props.reference}
-           updateReference={this.props.updateBibleReference}
-           previousURL={previousURL}
-           nextURL={nextURL}
-          />
 
           {message}
 
@@ -110,14 +105,17 @@ class BibleWidget extends React.Component {
             return <div key={v.node.id}>{heading}<BibleVerse baseURL={baseURL} verse={v.node} viewer={viewer} fullReference={fullReference}/></div>
           })}
 
-          {verse}
-
           {onlyChapterViewBack}
           {onlyChapterViewNext}
         </div>
       )
     }
   } 
+
+  updateReference(e){
+    let ref = e.target.dataset.reference
+    this.props.updateBibleReference(ref)
+  }
 
 }
 
@@ -147,6 +145,14 @@ export default createFragmentContainer(BibleWidget, graphql`
           body
           reference
           verseNumber
+          crossReferences(first:$crossReferencesPageSize){
+            edges{
+              node{
+                id
+                reference
+              }
+            }
+          }
           chapter {
             id
             order_by
@@ -158,15 +164,5 @@ export default createFragmentContainer(BibleWidget, graphql`
         }
       }
     }
-
-  fragment BibleWidget_bibleVerse on BibleVerse {
-    ...FocusedBibleVerse_verse
-    previous {
-      reference
-    }
-    next {
-      reference
-    }
-  }
 
 `)

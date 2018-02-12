@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash db0147e471373b6ae9aa5a822a5e8f93
+ * @relayHash 6fbf88ba264bef26d9ede6e703a5a28f
  */
 
 /* eslint-disable */
@@ -16,7 +16,6 @@ export type CreateSessionMutationVariables = {|
     clientMutationId: string;
   };
 |};
-
 export type CreateSessionMutationResponse = {|
   +createSession: ?{|
     +error: ?{|

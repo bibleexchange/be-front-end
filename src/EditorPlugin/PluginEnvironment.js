@@ -21,7 +21,7 @@ class PluginEnvironment {
       "vimeo": VimeoService,
       "vine": VineService,
       "prezi": PreziService,
-      "be":BibleExchangeService,
+      "scripture":BibleExchangeService,
       "gslide":GoogleSlideService,
       "soundcloud":SoundCloudService
     };

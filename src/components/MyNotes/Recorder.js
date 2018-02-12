@@ -1,7 +1,7 @@
 import React from 'react'
 import { findDOMNode } from "react-dom";
-import Guitar from './Objects/Guitar'
-import ElectricWave from './Objects/ElectricWave'
+import Guitar from '../Note/Media/Guitar'
+import ElectricWave from '../Note/Media/ElectricWave'
 
 /*
 function voiceMute() { // toggle to mute and unmute sound

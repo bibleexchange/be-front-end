@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash e0ba864eee42c632bf3dfa516ba9430b
+ * @relayHash 3950e8392a11bb5f5f5cd07ccd1fb0d8
  */
 
 /* eslint-disable */
@@ -34,8 +34,8 @@ query CourseDefaultViewerQuery(
       ...CourseWidget_courses
       edges {
         node {
-          id
           __typename
+          id
         }
         cursor
       }
@@ -319,6 +319,13 @@ const batch /*: ConcreteBatch*/ = {
                         "kind": "ScalarField",
                         "alias": null,
                         "args": null,
+                        "name": "__typename",
+                        "storageKey": null
+                      },
+                      {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "args": null,
                         "name": "id",
                         "storageKey": null
                       },
@@ -373,13 +380,6 @@ const batch /*: ConcreteBatch*/ = {
                             "storageKey": null
                           }
                         ],
-                        "storageKey": null
-                      },
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "args": null,
-                        "name": "__typename",
                         "storageKey": null
                       }
                     ],
@@ -456,7 +456,7 @@ const batch /*: ConcreteBatch*/ = {
       }
     ]
   },
-  "text": "query CourseDefaultViewerQuery(\n  $coursesPageSize: Int!\n) {\n  viewer {\n    ...CourseWidget_viewer\n    ...Navbar_viewer\n    courses(first: $coursesPageSize, orderBy: \"title:ASC\", filter: \"public:1\") {\n      ...CourseWidget_courses\n      edges {\n        node {\n          id\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}\n\nfragment CourseWidget_viewer on Viewer {\n  ...CourseBadge_viewer\n}\n\nfragment Navbar_viewer on Viewer {\n  authenticated\n  email\n  name\n}\n\nfragment CourseWidget_courses on CourseConnection {\n  edges {\n    node {\n      id\n      title\n      description\n      ...CourseBadge_course\n    }\n  }\n}\n\nfragment CourseBadge_course on Course {\n  id\n  title\n  description\n  updated_at\n  created_at\n  owner {\n    id\n    name\n  }\n}\n\nfragment CourseBadge_viewer on Viewer {\n  id\n}\n"
+  "text": "query CourseDefaultViewerQuery(\n  $coursesPageSize: Int!\n) {\n  viewer {\n    ...CourseWidget_viewer\n    ...Navbar_viewer\n    courses(first: $coursesPageSize, orderBy: \"title:ASC\", filter: \"public:1\") {\n      ...CourseWidget_courses\n      edges {\n        node {\n          __typename\n          id\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}\n\nfragment CourseWidget_viewer on Viewer {\n  ...CourseBadge_viewer\n}\n\nfragment Navbar_viewer on Viewer {\n  authenticated\n  email\n  name\n}\n\nfragment CourseWidget_courses on CourseConnection {\n  edges {\n    node {\n      id\n      title\n      description\n      ...CourseBadge_course\n    }\n  }\n}\n\nfragment CourseBadge_course on Course {\n  id\n  title\n  description\n  updated_at\n  created_at\n  owner {\n    id\n    name\n  }\n}\n\nfragment CourseBadge_viewer on Viewer {\n  id\n}\n"
 };
 
 module.exports = batch;

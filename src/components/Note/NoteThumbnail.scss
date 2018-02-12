@@ -1,6 +1,13 @@
 .note-thumbnail {
   padding: 15px 0;
   border-bottom: 1px solid #D2D2D2;
+  display:block;
+
+
+  img {
+    height: 55px;
+  }
+
 }
 .note-thumbnail:last-child {
   border: none;

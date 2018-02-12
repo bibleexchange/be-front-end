@@ -1,3 +1,34 @@
+import React from 'react'
+import Scripture from './Media/Scripture'
+import Youtube from './Media/Youtube'
+import Quiz from './Media/Quiz'
+import Text from './Media/Text'
+import Timeline from './Media/Timeline'
+import BarChart from './Media/BarChart'
+import ImageMap from './Media/ImageMap'
+import NoteTranslation from './NoteTranslation'
+import md from '../../Markdown'
+
+export function translateNote(rawNote, lang){
+  let config = configure(rawNote)
+  //console.log(config)
+  let translation = new NoteTranslation(config, lang)
+  return translation
+}
+
+export const MediaTypes = {
+  scripture: "scripture", 
+  youtube: "youtube", 
+  quiz:"quiz", 
+  text:"text", 
+  markdown: "md",
+  timeline:"timeline",
+  barchart:"barchart",
+  imagemap:"imagemap"
+}
+ 
+//console.log(md.render('::: quiz Love is the Title\n## Who Build the Ark\n1. Noah\n2. Jona\n3. Adam\nanswer: 3\n\n## Who Build the Ark\n1. Noah\n2. job\n3. Jason\nanswer: 2\n:::'));
+
 function md5cycle(x, k) {
 var a = x[0], b = x[1], c = x[2], d = x[3];
 
@@ -161,7 +192,7 @@ x[i] = rhex(x[i]);
 return x.join('');
 }
 
-function md5(s) {
+export function md5(s) {
 return hex(md51(s));
 }
 
@@ -183,19 +214,131 @@ return (msw << 16) | (lsw & 0xFFFF);
 }
 }
 
+export function makeMedia(index,markup, value, style, translation){
+  return {
+    index: index? index:0,
+    markup: markup? markup:"md",
+    value: value? value:"",
+    style: style? style:{},
+    translation: translation? translation : {}
+  }
+}
+
+export function makePage(index, title, media, style){
+  return {
+    index: index? index:0,
+    title: title? title:"Add Title",
+    media:media? media:[makeMedia()],
+    style:style? style:{}
+  }
+}
+
+
+export function makeMeta(key, value){
+  return {
+    key: key? key:0,
+    value: value? value:""
+  }
+}
+
+class Config {
+  constructor(id, meta, pages, history, style, translation){
+    this.id = id? id:0
+    this.meta = meta? meta:[]
+    this.pages = pages? pages:[]
+    this.history = history? history:[]
+    this.style = style? style:{}
+    this.translation = translation? translation:{}
+  }
+
+   get(key){
+    let search = false
+     this.meta.map(function(ent){
+        if(ent !== undefined && ent.key === key){
+          search = ent.value 
+        }
+      })
+
+     if(search === false && key === "title" && this.pages.length >= 1){
+      let value = this.pages[0].media[0].value
+      search = value.substring(0,50) + "..."
+     }
+
+     return search
+    }
+}
+
 export function configure(note){
 
-  let config = {}
-  let meta = []
-  let history = []
-  let ctr = 0
+  let config = new Config()
 
   if(note !== null && note.body !== null && note.body !== undefined){
-      
+      //console.log("### note body is not null")
+
       if(note.body.substring(0,1) === "{"){
-        config = JSON.parse(note.body)
-        if(config.meta === undefined){config.meta = []}else{ctr = config.meta.length}
-        if(config.links !== undefined){config.meta[ctr] = {key:"links", value:config.links}; ctr++;}
+        //console.log("### note body is an object")
+
+        try {
+          let body = JSON.parse(note.body)
+
+          if(body.note !== "" && body.note !== undefined){
+            config = Object.assign(config, body.note)
+          }else{
+            config = Object.assign(config, body)
+          }
+          
+        }
+
+        catch(e){
+          console.log(e)
+          let media = makeMedia(undefined, "markup", e.message + "!: " + note.body)
+          let page = makePage(undefined, note.body.substring(0,50), [media])
+          config.pages.push(page)
+        }
+
+        //console.log("### config pages", config.pages)
+        if(config.pages !== undefined){
+          let newPages = config.pages
+
+          config.pages.map(function(p, i){
+
+            if(p.media === undefined && p.value !== undefined){
+              newPages[i].media = JSON.parse(p.value)
+              delete newPages[i].value
+            }
+          })
+
+          config.pages = newPages
+        }
+
+        if(config.lines !== undefined){
+          console.log('from lines')
+
+          let media = []
+
+          config.lines.map(function(l){
+            media.push(makeMedia(undefined,undefined, JSON.stringify(l)))
+          })
+
+          console.log(config.lines,media,note)
+
+          let firstPage = makePage(0, "First Page", media)
+          config.pages = [firstPage]
+          delete config.lines
+        }
+
+        if(config.text !== undefined){
+          
+          let media = [
+            makeMedia(undefined,undefined, config.text)
+          ]
+
+          let page = makePage(0, "", media)
+          config.pages.push(page)
+        }
+
+        if(config.meta === undefined){config.meta = []}
+        if(config.links !== undefined){config.meta.push({key:"links", value:config.links}) }
         if(config.tags !== undefined){
           let configTags = []
 
@@ -207,56 +350,55 @@ export function configure(note){
 
           let tags = [ ...new Set(note.tags.concat(configTags))]
 
-          config.meta[ctr] = {key:"tags", value:tags};
-          config.meta[ctr].value = config.meta[ctr].value.filter(Boolean) 
-          ctr++;
+          config.meta.push({key:"tags", value:tags});
+          delete config.tags
         }
 
-        if(note.verse !== undefined){config.meta[ctr] = {key:"reference", value:note.verse.reference}; ctr++;}
+        config.pages.map(function(p){
+          return p.media.map(function(m){
+                if(m.translation === undefined){
+                  m.translation = {}
+                }else if(typeof m.translation === "string"){
+                  m.translation = JSON.parse(m.translation)
+                }
+                return m
+          })
+        })
 
-        if(config.meta.get("title") === null){
+      }else{
+          let firstPage = makePage(0, "New Page", [makeMedia("text",note.body)], {})
+          config.pages = [firstPage]
+          delete config.lines
+          config.meta.push(makeMeta("title", note.title))
+          config.meta.push(makeMeta("tags", ""))
+      }
+      
+    }
+
+        if(config.get("scripture") === null || config.get("scripture") === false){
+          if(note !== null){
+            config.meta.push(makeMeta("scripture", note.verse.reference))
+          }
+          
+        }
+
+        if(config.get("title") === null || config.get("title") === false){
 
           let value = null
 
-          if(note.title !== null){value = note.title;}
-          else if(config.title !== undefined){value = config.title;}
+          if(note !== null && note.title !== null){value = note.title;}
+          else if(config.title !== undefined){value = config.title; config.title = undefined;}
           else if(config.text !== undefined){value = config.text.substring(0,50)+"... ";}
-          else{value = note.body.substring(0,50)+"... "; }
+          else if(note !== null){value = note.body.substring(0,50)+"... "; }
 
-          config.meta[ctr] = config.meta[0] 
-          config.meta[0] = {key:"title", value:value}
-          ctr++;
+          config.meta.push(config.meta[0])
+          config.meta.push(makeMeta("title", value))
         }
 
-
-        if(config.pages === undefined || config.pages === null || config.pages.length <= 0){
-          config.pages = [{index:0, value:config.text}]
+       if(config.get("credit") === null || config.get("credit") === false){
+        if(note !== undefined && note !== null && note.author !== undefined){config.meta.push({key:"credit", value:note.author.name})}
         }
 
-       if(config.meta.get("credit") === null){
-        if(note.author !== undefined){config.meta[ctr] = {key:"credit", value:note.author.name}; ctr++;}
-        }
-
-      }else{
-
-        config = {
-          pages: [{index:0, value:note.body}],
-          meta: [{key:"title",value:note.title}]
-        }
-      }
-      
-      if(config.pages === null || config.pages === undefined){config.pages = []}
-      if(config.meta === null || config.meta === undefined){config.meta = meta}
-      if(config.history === null || config.history === undefined){config.history = history}
-    }
-
-    if(Object.keys(config).length === 0 && config.constructor === Object){
-      config = {
-      meta : meta,
-      pages : [],
-      history: []
-      }
-    }
 
     return config
 	}
@@ -279,3 +421,242 @@ export function move(old_index, new_index, array) {
 
     return array;
 };
+
+  export function parseURL(string){
+
+    let url = {
+      protocol: "",
+      domain:"",
+      path:""
+    }
+
+    let protocol = "http:";
+
+    if(string.includes(protocol)){
+      string = string.replace(protocol,"")
+    }else{
+      protocol = "https:"
+      if(string.includes(protocol)){
+        string = string.replace(protocol,"")
+        
+      }
+
+    }
+    string = string.replace("//","")
+
+    url.protocol = protocol.replace(":","")
+
+    string = string.split("/")
+    
+    let domain = string[0].split(".")
+
+    if(domain.length === 3){
+      url.subdomain = domain[0]
+      url.domain = domain[1]
+      url.tld = domain[2]
+    }else if(domain.length === 2){
+      url.subdomain = "www"
+      url.domain = domain[0]
+      url.tld = domain[1]
+    }
+
+    url.path = string[1]
+
+    return url
+
+  }
+
+  export function  renderObject(obj){
+
+    let markup = obj.type
+    if(markup === undefined){markup = obj.markup }
+
+    switch(markup){
+
+    case "embed": {
+
+        let url = parseURL(obj.value)
+
+        if(url.domain === "youtube"){
+          return <Youtube {...obj} url={url}/>
+        }
+    break  
+    }
+    case "scripture": 
+      return <Scripture {...obj}/>
+      break
+    case "h1":
+    case "h2":
+    case "h3":
+    case "h4":
+    case "h5":
+    case "h6":
+      return <obj.markup>{this.props.line.value}</obj.markup>
+      break
+    case "md":
+      return <Text obj={obj} />
+      break
+    case "raw":
+      return <div dangerouslySetInnerHTML={{__html: obj.value}} />
+      break
+    case "quiz":
+      return <Quiz {...obj} />
+      break
+    case "timeline":
+      return <Timeline events={JSON.parse(obj.value)} {...obj} />
+      break
+    case "barchart":
+      return <BarChart percentages={JSON.parse(obj.value)} {...obj} />
+      break
+    case "imagemap":
+      return <ImageMap image={JSON.parse(obj.value)} {...obj} />
+      break
+
+    default:
+        return <p>{obj.value}</p>
+
+    }       
+      
+  }
+
+export function markdown(value){
+  return md.render(value)
+}
+
+function getOptionFeedBack(option){
+  let x = option.split("#",2)
+  let feedback = null
+
+      if(x.length === 2){
+        feedback = x[1]
+      }else{
+        feedback = null
+      }
+
+      return feedback
+
+}
+
+function testIfShortAnswer(options){
+  
+  let answer = true
+  options.map(function(opt){
+    if(opt.sym !== "="){answer = false}
+  })
+  return answer
+}
+
+function testIfMultipleChoice(options){
+  let answer = false
+  options.map(function(opt){
+    if(opt.sym === "~"){answer = true}
+  })
+  return answer
+}
+
+function scanRawOption(opt){
+
+  let option = {key:"",display:"", feedback:"",score:0, sym:""}
+  
+  option.feedback = getOptionFeedBack(opt)
+  option.sym = opt.substring(0,1)
+  
+  let q = opt.split("#",2)[0]
+  
+  option.display = q.replace("=","").replace("~","")
+  option.key = q.replace("=","").replace("~","").toLowerCase()
+
+  if(option.sym === "="){
+    option.score = 100
+  }else{
+    option.score = 0
+  }
+
+  return option
+
+}
+
+function scanAllOptions(options){
+  let opts = []
+
+  options.map(function(o,i){
+     opts.push(scanRawOption(o))
+  })
+
+  return opts
+}
+
+export const QuestionTypes = {
+  DESCRIPTION: "DESCRIPTION", 
+  TRUE_FALSE: "TRUE_FALSE", 
+  FILL_IN_THE_BLANK:"FILL_IN_THE_BLANK", 
+  SHORT_ANSWER:"SHORT_ANSWER", 
+  MULTIPLE_CHOICE:"MULTIPLE_CHOICE"
+}
+
+export function figureQuestionTypeAnswer(question){
+  
+  //Figure Type then Answer
+  question.options = scanAllOptions(question.options)
+
+  //Test if Desription only
+  if(question.options.length <= 0){
+    question.type = QuestionTypes.DESCRIPTION
+  }else{
+
+    //TEST IF TRUE OR FALSE QUESTION
+    if(question.options[0].key === "true" || question.options[0].key === "false"){
+      question.type = "TRUE_FALSE"
+
+      question.options.map(function(o,i){
+
+        if(o.sym === "="){
+          question.answer = o.key
+          o.score = 100
+        }
+        
+        question.options[i] = o
+      })
+
+      // TEST IF FILL_IN_THE_BLANK
+    }else if(question.title.indexOf("___") >= 0){
+        question.type = QuestionTypes.FILL_IN_THE_BLANK
+        question.answer = []
+        question.options.map(function(o,i){
+          question.answer.push(o.key)
+          o.score = 100
+          question.options[i] = o
+        })
+      // TEST IF SHORT ANSWER
+    }else if(testIfShortAnswer(question.options)){
+        question.type = QuestionTypes.SHORT_ANSWER
+        question.answer = []
+
+        question.options.map(function(o,i){
+          question.answer.push(o.key)
+          o.score = 100
+          question.options[i] = o
+        })
+      // TEST IF MULTIPLE CHOICE
+    }else if(testIfMultipleChoice(question.options)){
+        question.type = QuestionTypes.MULTIPLE_CHOICE
+        question.answer = ""
+
+        question.options.map(function(o,i){
+          
+          if(o.sym === "="){
+            question.answer = o.key
+          }
+
+          question.options[i] = o
+        })
+
+    }else{
+      question.type = QuestionTypes.DESCRIPTION
+      question.answer = null
+    }
+  }
+  return question
+
+}
+
