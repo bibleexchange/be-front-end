@@ -27,7 +27,7 @@
     "fs-extra": "3.0.1",
     "html-webpack-plugin": "2.29.0",
     "jest": "20.0.4",
-    "markdown-it": "^8.4.0",
+    "markdown-it": "^12.3.2",
     "markdown-it-block-embed": "0.0.3",
     "markdown-it-container": "^2.0.0",
     "node-soundcloud": "0.0.6",
